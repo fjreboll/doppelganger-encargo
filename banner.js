@@ -154,8 +154,10 @@
     ctx.putImageData(img, 0, 0);
   }
 
+  let visible = true;
+  new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(root);
   function bucle(now) {
-    if (jugando) { const dt = Math.min(.1, (now - tPrev) / 1000); avanzar(dt, (now - t0) / 1000); dibujar((now - t0) / 1000); }
+    if (jugando && visible) { const dt = Math.min(.1, (now - tPrev) / 1000); avanzar(dt, (now - t0) / 1000); dibujar((now - t0) / 1000); }
     tPrev = now; requestAnimationFrame(bucle);
   }
 
@@ -171,7 +173,7 @@
   $('.px-camaras').textContent = prog.camaras; $('.px-lectores').textContent = prog.lectores_patentes; $('.px-comunas').textContent = prog.comunas_RM;
   const CORTO = { 'AUS-PROTOCOLO-ERROR': 'falsos positivos', 'AUS-PROVEEDOR-FAQ': 'proveedor', 'AUS-RETENCION': 'retención', 'AUS-CODIGO-LICIT': 'licitación', 'AUS-REGISTRO-DIV': 'registro de errores', 'AUS-NOMINA-ETICA': 'comité de ética' };
   const lista = $('.px-aus');
-  aus.forEach(n => { const li = document.createElement('li'); li.textContent = CORTO[n.id] || n.nombre.split(' (')[0]; li.title = n.nombre; lista.append(li); });
+  aus.forEach(n => { const li = document.createElement('li'); const b = document.createElement('button'); b.type = 'button'; b.textContent = CORTO[n.id] || n.nombre.split(' (')[0]; b.title = n.nombre + ' · ver en el grafo'; b.onclick = () => window.panoptes?.ver(n.id); li.append(b); lista.append(li); });
   $('.px-aus-n').textContent = aus.length;
 
   const btn = $('.px-play');
@@ -183,13 +185,13 @@
     const b = cv.getBoundingClientRect(), x = Math.floor((e.clientX - b.left) / b.width * grid.cols), y = Math.floor((e.clientY - b.top) / b.height * grid.rows);
     const cam = camaras.find(q => x >= q.x - 1 && x <= q.x + 5 && y >= q.y - 1 && y <= q.y + 4);
     if (Math.abs(x - hub.x - 3) <= 5 && Math.abs(y - hub.y - 3) <= 5) {
-      tt.innerHTML = `<div class="tt-sub">Centro SITIA (ilustrativo)</div><div class="body-s">Carabineros opera; la SPD administra. Sin registro público de errores.</div>`;
+      tt.innerHTML = `<div class="tt-sub">Centro SITIA (ilustrativo)</div><div class="body-s">Carabineros opera; la SPD administra. Sin registro público de errores.</div><div class="body-s" style="margin-top:4px;color:var(--md-primary)">Clic: ver SITIA en el grafo</div>`;
     } else if (cam) {
-      tt.innerHTML = `<div class="tt-sub">Cámara · ${cam.c.nombre}</div><div class="body-s">Ubicación ilustrativa. Cada auto que pasa cerca envía una lectura al centro.</div>`;
+      tt.innerHTML = `<div class="tt-sub">Cámara · ${cam.c.nombre}</div><div class="body-s">Ubicación ilustrativa. Cada auto que pasa cerca envía una lectura al centro.</div><div class="body-s" style="margin-top:4px;color:var(--md-primary)">Clic: ver SITIA en el grafo</div>`;
     } else {
       const c = porIndice[M[y * grid.cols + x]];
       if (!c) { tt.classList.remove('on'); return; }
-      tt.innerHTML = `<div class="tt-sub">${c.nombre}</div><div class="body-s">${c.piloto ? 'Nombrada por SITIA como colaboradora' : 'No nombrada en la fuente'}</div>`;
+      tt.innerHTML = `<div class="tt-sub">${c.nombre}</div><div class="body-s">${c.piloto ? 'Nombrada por SITIA como colaboradora' : 'No nombrada en la fuente'}</div><div class="body-s" style="margin-top:4px;color:var(--md-primary)">Clic: ver Región Metropolitana en el grafo</div>`;
     }
     tt.classList.add('on');
     const rr = tt.getBoundingClientRect(); let tx = e.clientX + 14, ty = e.clientY + 14;
@@ -197,6 +199,15 @@
     tt.style.left = Math.max(8, tx) + 'px'; tt.style.top = Math.max(8, ty) + 'px';
   });
   cv.addEventListener('pointerleave', () => tt.classList.remove('on'));
+  cv.style.cursor = 'pointer';
+  cv.addEventListener('click', e => {
+    const b = cv.getBoundingClientRect(), x = Math.floor((e.clientX - b.left) / b.width * grid.cols), y = Math.floor((e.clientY - b.top) / b.height * grid.rows);
+    const enHub = Math.abs(x - hub.x - 3) <= 5 && Math.abs(y - hub.y - 3) <= 5, cam = camaras.find(q => x >= q.x - 1 && x <= q.x + 5 && y >= q.y - 1 && y <= q.y + 4);
+    tt.classList.remove('on');
+    if (enHub || cam) window.panoptes?.ver('PRG-SITIA');
+    else if (porIndice[M[y * grid.cols + x]]) window.panoptes?.ver('TER-RM');
+  });
+  $('.px-hub').style.pointerEvents = 'auto'; $('.px-hub').style.cursor = 'pointer'; $('.px-hub').onclick = () => window.panoptes?.ver('PRG-SITIA');
 
   function estatico() {
     pulsos = [];

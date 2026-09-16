@@ -1,6 +1,6 @@
-# Grafo del encargo · SITIA (Doppelganger C)
+# Panoptes · Grafo del encargo SITIA (Doppelgänger C)
 
-**Sitio:** https://fjreboll.github.io/doppelganger-encargo/ · **Par:** [DOBLE (A)](https://fjreboll.github.io/doppelganger-doble/)
+**Sitio:** https://fjreboll.github.io/doppelganger-encargo/ · **Par:** [Santiago Gemelo Digital (A)](https://fjreboll.github.io/doppelganger-doble/)
 
 Red de nodos de la prueba de concepto C del programa *Doppelganger*: la ontología de fusión de datos aplicada hacia arriba, sobre el Estado y sus proveedores. Organismos, unidades, empresas, instrumentos, normas, territorios y personas en su rol público del Sistema Integrado de Teleprotección con Inteligencia Artificial (SITIA), con fuente y evidencia en cada vínculo. Las ausencias —lo que el encargo no documenta— son objetos de primera clase.
 
@@ -17,6 +17,7 @@ Red de nodos de la prueba de concepto C del programa *Doppelganger*: la ontolog�
 |---|---|
 | `index.html`, `app.js` | Interfaz (Material Design 3; grafo de fuerzas D3 con tooltips, filtros, búsqueda, panel de detalle y vista tabular) |
 | `banner.js`, `assets/banner_grid_sitia.json` | Banner pixel art: RM rasterizada con las 12 comunas que SITIA nombra como colaboradoras, autos que circulan por la red vial de OpenStreetMap y cámaras (ubicación ilustrativa) junto a avenidas que envían lecturas a un centro, cifras declaradas y las ausencias del grafo |
+| `nav.js` | Navegación compartida con el sitio A: índice de secciones con seguimiento de lectura, barra de progreso, aparición progresiva, enlaces profundos y atajos (`/` buscar, `[` `]` secciones, `t` arriba). El banner enlaza con el grafo: el centro y las cámaras seleccionan SITIA, las comunas la Región Metropolitana y cada ausencia su nodo |
 | `data.json` | Objetos, vínculos, fuentes y autorregistro exportados desde la base común |
 | `assets/` | Hoja de estilo M3, D3 v7 y tipografías auto-alojadas (incl. Pixelify Sans y VT323, SIL OFL) |
 
