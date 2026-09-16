@@ -25,7 +25,7 @@
 .fab-set{position:absolute;right:16px;bottom:16px;display:flex;flex-direction:column;gap:8px}
 .fab{width:40px;height:40px;border-radius:var(--shape-m);border:0;background:var(--md-secondary-container);color:var(--md-on-secondary-container);box-shadow:var(--md-elev-2);display:grid;place-items:center;cursor:pointer}
 .fab:hover{box-shadow:var(--md-elev-3)}
-.legend-card{position:absolute;left:12px;top:12px;max-width:260px;padding:12px 14px;border-radius:var(--shape-m);background:color-mix(in srgb,var(--md-surface-container) 92%,transparent);font-size:12px;line-height:16px;color:var(--md-on-surface-variant);backdrop-filter:blur(6px)}
+.legend-card{position:absolute;left:12px;top:12px;max-width:260px;padding:12px 14px;border-radius:var(--shape-m);background:color-mix(in srgb,var(--md-surface-container-high) 96%,transparent);color:var(--md-on-surface);font-size:12px;line-height:16px;color:var(--md-on-surface-variant);backdrop-filter:blur(6px)}
 .legend-card .row{display:flex;align-items:center;gap:8px;margin:3px 0}
 .legend-card svg{flex:none}
 .legend-card summary{cursor:pointer;font:500 12px/16px var(--font);letter-spacing:.5px;color:var(--md-on-surface);list-style:none;display:flex;align-items:center;gap:6px}
@@ -38,12 +38,15 @@
 .edge-item button{all:unset;cursor:pointer;color:var(--md-primary);font-weight:500}
 .edge-item button:focus-visible{outline:2px solid var(--md-primary)}
 .quote{margin-top:4px;padding:8px 12px;border-left:3px solid var(--md-outline-variant);color:var(--md-on-surface-variant);font-size:13px;line-height:18px;background:var(--md-surface-container-low);border-radius:0 var(--shape-s) var(--shape-s) 0}
-.quote.aus{border-left:3px dashed var(--viz-critical)}
+.quote.aus{border-left:3px dashed var(--net-aus)}
 .empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:32px 12px;color:var(--md-on-surface-variant)}
 .empty .material-symbols-outlined{font-size:40px;color:var(--md-outline)}
-.aus-card{border:1px dashed var(--viz-critical)!important}
+.aus-card{border:1px dashed var(--net-aus)!important}
 .aus-card .material-symbols-outlined{color:var(--md-error)}
-.node text{fill:var(--md-on-surface-variant);paint-order:stroke;stroke:var(--md-surface-container-lowest);stroke-width:3px;stroke-linejoin:round;pointer-events:none}
+:root{--net-pub:#256abf;--net-priv:#c9501e;--net-ase:#12875d;--net-ctx:#5d6068;--net-aus:#b3261e;--net-edge:#74777f;--net-label:#191c20;--net-halo:#ffffff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--net-pub:#3987e5;--net-priv:#e0703f;--net-ase:#1faa78;--net-ctx:#a9abb4;--net-aus:#ff8a80;--net-edge:#8e9099;--net-label:#e2e2e9;--net-halo:#0c0e13}}
+:root[data-theme="dark"]{--net-pub:#3987e5;--net-priv:#e0703f;--net-ase:#1faa78;--net-ctx:#a9abb4;--net-aus:#ff8a80;--net-edge:#8e9099;--net-label:#e2e2e9;--net-halo:#0c0e13}
+.nlabel{fill:var(--net-label);paint-order:stroke;stroke:var(--net-halo);stroke-linejoin:round;letter-spacing:.2px}
 .node{cursor:pointer}
 .node:focus,.node:focus-visible{outline:none}.node:focus-visible .shape{stroke:var(--md-primary);stroke-width:3px}
 .link{cursor:pointer}
@@ -80,6 +83,7 @@
     <div class="card graph-card">
       <svg id="graph" role="img" aria-label="Grafo de red del encargo SITIA"></svg>
       <details class="legend-card" open id="legend"><summary><span class="material-symbols-outlined" style="font-size:18px">legend_toggle</span>Leyenda</summary><div id="legend-body"></div></details>
+      <p class="body-s" id="label-hint" aria-live="polite" style="position:absolute;left:16px;bottom:12px;margin:0;padding:4px 10px;border-radius:8px;background:var(--md-surface-container-high);color:var(--md-on-surface-variant);max-width:calc(100% - 96px)"></p>
       <div class="fab-set">
         <button class="fab" id="zin" aria-label="Acercar"><span class="material-symbols-outlined">add</span></button>
         <button class="fab" id="zout" aria-label="Alejar"><span class="material-symbols-outlined">remove</span></button>

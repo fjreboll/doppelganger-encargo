@@ -18,7 +18,7 @@
     resultado:   { label: 'Resultado declarado', symbol: d3.symbolSquare2, sector: 'neutro' },
     ausencia:    { label: 'Ausencia documentada', symbol: d3.symbolCircle, sector: 'ausencia' }
   };
-  const SECTOR = { publico: ['--viz-1', 'Público'], privado: ['--viz-2', 'Privado'], asesoria: ['--viz-3', 'Academia y sociedad civil'], neutro: ['--md-outline', 'Contexto'], ausencia: ['--viz-critical', 'Ausencia'] };
+  const SECTOR = { publico: ['--net-pub', 'Público'], privado: ['--net-priv', 'Privado'], asesoria: ['--net-ase', 'Academia y sociedad civil'], neutro: ['--net-ctx', 'Contexto'], ausencia: ['--net-aus', 'Ausencia'] };
   const col = f => css(SECTOR[FAM[f].sector][0]);
   const TIPO_V = t => t.replaceAll('_', ' ');
   let visibles = new Set(Object.keys(FAM)), seleccion = null, query = '';
@@ -54,29 +54,32 @@
     return `<svg width="${size + 4}" height="${size + 4}" viewBox="-9 -9 18 18"><path d="${sym}" fill="${au ? 'none' : col(f)}" stroke="${au ? col(f) : 'none'}" stroke-width="${au ? 1.8 : 0}" stroke-dasharray="${au ? '2.5 2' : ''}"/></svg>`; };
   const drawLegend = () => {
     $('#legend-body').innerHTML = Object.keys(FAM).map(f => `<div class="row">${glyph(f)}<span>${FAM[f].label}</span></div>`).join('')
-      + `<hr class="divider" style="margin:8px 0"><div class="row"><svg width="22" height="8"><line x1="0" y1="4" x2="22" y2="4" stroke="${css('--md-outline')}" stroke-width="1.5"/></svg>Vínculo documentado</div>`
-      + `<div class="row"><svg width="22" height="8"><line x1="0" y1="4" x2="22" y2="4" stroke="${css('--viz-critical')}" stroke-width="1.5" stroke-dasharray="4 3"/></svg>Carece de · asimetría</div>`
-      + `<div class="row"><svg width="22" height="8"><line x1="0" y1="4" x2="22" y2="4" stroke="${css('--md-outline')}" stroke-width="1.5" stroke-dasharray="1 3"/></svg>Hipótesis (POC)</div>`
+      + `<hr class="divider" style="margin:8px 0"><div class="row"><svg width="22" height="8"><line x1="0" y1="4" x2="22" y2="4" stroke="${css('--net-edge')}" stroke-width="1.5"/></svg>Vínculo documentado</div>`
+      + `<div class="row"><svg width="22" height="8"><line x1="0" y1="4" x2="22" y2="4" stroke="${css('--net-aus')}" stroke-width="1.5" stroke-dasharray="4 3"/></svg>Carece de · asimetría</div>`
+      + `<div class="row"><svg width="22" height="8"><line x1="0" y1="4" x2="22" y2="4" stroke="${css('--net-edge')}" stroke-width="1.5" stroke-dasharray="1 3"/></svg>Hipótesis (POC)</div>`
       + `<hr class="divider" style="margin:8px 0">` + Object.entries(SECTOR).map(([k, [v, l]]) => `<div class="row"><span style="width:10px;height:10px;border-radius:2px;background:${css(v)}"></span>${l}</div>`).join('');
   };
   const drawChips = () => { $('#chips').innerHTML = Object.keys(FAM).map(f => `<button class="chip" aria-pressed="${visibles.has(f)}" data-f="${f}">${FAM[f].label}</button>`).join(''); };
   drawLegend(); drawChips();
   if (innerWidth < 600) $('#legend').open = false;
+  $('#legend').addEventListener('toggle', () => schedule());
   $('#chips').onclick = e => { const b = e.target.closest('button'); if (!b) return; const f = b.dataset.f; visibles.has(f) ? visibles.delete(f) : visibles.add(f); if (!visibles.size) visibles = new Set(Object.keys(FAM)); drawChips(); applyVisibility(); };
 
   /* grafo */
   const svg = d3.select('#graph'), g = svg.append('g');
   let W = svg.node().clientWidth, H = svg.node().clientHeight;
   let kActual = 1;
-  const zoom = d3.zoom().scaleExtent([.25, 5]).on('zoom', e => { g.attr('transform', e.transform); kActual = e.transform.k; if (typeof label !== 'undefined') label.attr('font-size', 12 / kActual).attr('stroke-width', 3 / kActual).attr('dy', n => (Math.sqrt(r(n)) / 1.6 + 4) + 11 / kActual); });
+  let rafLabels = 0;
+  const schedule = () => { cancelAnimationFrame(rafLabels); rafLabels = requestAnimationFrame(() => placeLabels()); };
+  const zoom = d3.zoom().scaleExtent([.25, 5]).on('zoom', e => { g.attr('transform', e.transform); kActual = e.transform.k; schedule(); });
   svg.call(zoom).on('dblclick.zoom', null);
   svg.on('click', e => { if (e.target === svg.node()) select(null); });
   const r = n => n.familia === 'programa' ? 900 : 150 + n.deg * 45;
   const linkStyle = l => l.tipo === 'carece_de' || l.tipo === 'asimetria_con' ? 'aus' : l.plano_evidencia === 'hipotesis' ? 'hip' : 'doc';
-  const L = g.append('g').selectAll('line').data(links).join('line').attr('class', 'link').attr('stroke-width', 1.5).attr('stroke-linecap', 'round');
+  const L = g.append('g').selectAll('line').data(links).join('line').attr('class', 'link').attr('stroke-width', 1.2).attr('stroke-linecap', 'round');
   const Lhit = g.append('g').selectAll('line').data(links).join('line').attr('stroke', 'transparent').attr('stroke-width', 12).attr('class', 'link')
-    .on('pointermove', (e, l) => { d3.select(L.nodes()[links.indexOf(l)]).attr('stroke-width', 3); showTT(e, `<div class="tt-sub">${esc(nombre(l.source))} → ${esc(nombre(l.target))}</div><div class="label-m" style="margin-bottom:2px">Evidencia extraída</div><div class="label-l" style="color:var(--md-on-surface);margin-bottom:6px">${esc(TIPO_V(l.tipo))}</div><div class="quote ${linkStyle(l) === 'aus' ? 'aus' : ''}">${esc(l.cita)}</div><div class="body-s" style="margin-top:6px">${l.fecha ? esc(l.fecha) + ' · ' : ''}${esc(l.fuente)} · ${esc(l.plano_evidencia)}</div>`); })
-    .on('pointerleave', (e, l) => { d3.select(L.nodes()[links.indexOf(l)]).attr('stroke-width', 1.5); hideTT(); })
+    .on('pointermove', (e, l) => { d3.select(L.nodes()[links.indexOf(l)]).attr('stroke-width', 3).attr('stroke-opacity', 1); showTT(e, `<div class="tt-sub">${esc(nombre(l.source))} → ${esc(nombre(l.target))}</div><div class="label-m" style="margin-bottom:2px">Evidencia extraída</div><div class="label-l" style="color:var(--md-on-surface);margin-bottom:6px">${esc(TIPO_V(l.tipo))}</div><div class="quote ${linkStyle(l) === 'aus' ? 'aus' : ''}">${esc(l.cita)}</div><div class="body-s" style="margin-top:6px">${l.fecha ? esc(l.fecha) + ' · ' : ''}${esc(l.fuente)} · ${esc(l.plano_evidencia)}</div>`); })
+    .on('pointerleave', (e, l) => { d3.select(L.nodes()[links.indexOf(l)]).attr('stroke-width', 1.2).attr('stroke-opacity', linkStyle(l) === 'aus' ? 1 : .85); hideTT(); })
     .on('click', (e, l) => { e.stopPropagation(); select(l.source); });
   const N = g.append('g').selectAll('g').data(nodes).join('g').attr('class', 'node').attr('tabindex', 0).attr('role', 'button').attr('aria-label', n => `${n.nombre}, ${FAM[n.familia].label}, ${n.deg} vínculos`)
     .call(d3.drag().on('start', (e, d) => { if (!e.active) sim.alphaTarget(.25).restart(); d.fx = d.x; d.fy = d.y; }).on('drag', (e, d) => { d.fx = e.x; d.fy = e.y; }).on('end', (e, d) => { if (!e.active) sim.alphaTarget(0); d.fx = null; d.fy = null; }))
@@ -88,16 +91,62 @@
     .on('blur', () => { hideTT(); focusNeighborhood(seleccion); });
   N.append('circle').attr('r', 16).attr('fill', 'transparent');
   const shape = N.append('path').attr('class', 'shape').attr('d', n => d3.symbol(FAM[n.familia].symbol, r(n))());
-  const label = N.append('text').attr('dy', n => Math.sqrt(r(n)) / 1.6 + 12).attr('text-anchor', 'middle').text(n => { const s = nombre(n).split(' (')[0]; return s.length > 32 ? s.slice(0, 30) + '…' : s; });
+  /* ── etiquetas: capa superior con ubicación sin superposición (greedy, en espacio de pantalla) ── */
+  const FS = 12, LH = 16;
+  const labelText = n => { const s = nombre(n).split(' (')[0]; return s.length > 30 ? s.slice(0, 28).trim() + '…' : s; };
+  const ctx2d = document.createElement('canvas').getContext('2d');
+  const medir = (s, w = 500) => { ctx2d.font = `${w} ${FS}px "Roboto Flex", system-ui, sans-serif`; return ctx2d.measureText(s).width; };
+  nodes.forEach(n => { n.lt = labelText(n); n.lw = medir(n.lt); });
+  const labelLayer = g.append('g').attr('class', 'labels').attr('pointer-events', 'none');
+  const label = labelLayer.selectAll('text').data(nodes).join('text').attr('class', 'nlabel').text(n => n.lt).attr('display', 'none');
+  let keepSet = null, focusNode = null;
+  const radioPantalla = (n, k) => Math.sqrt(r(n)) * (n.familia === 'programa' ? .8 : .68) * k + 3;
+  const choca = (a, b) => a.x0 < b.x1 && a.x1 > b.x0 && a.y0 < b.y1 && a.y1 > b.y0;
+  function placeLabels() {
+    const t = d3.zoomTransform(svg.node()), k = t.k, el = svg.node(), Wv = el.clientWidth, Hv = el.clientHeight, sr = el.getBoundingClientRect();
+    const vis = nodes.filter(n => visibles.has(n.familia));
+    const bloques = [];
+    const lg = $('#legend');
+    [lg.open && getComputedStyle(lg).position === 'absolute' ? lg : null, $('.fab-set'), $('#label-hint')].filter(Boolean).forEach(o => { const b = o.getBoundingClientRect(); bloques.push({ x0: b.left - sr.left - 6, y0: b.top - sr.top - 6, x1: b.right - sr.left + 6, y1: b.bottom - sr.top + 6 }); });
+    vis.forEach(n => { const h = radioPantalla(n, k), x = t.applyX(n.x), y = t.applyY(n.y); bloques.push({ x0: x - h, y0: y - h, x1: x + h, y1: y + h, id: n.id }); });
+    const prio = n => (n === focusNode || n === seleccion ? 1e7 : 0) + (keepSet && keepSet.has(n.id) ? 1e6 : 0) + (n.familia === 'programa' ? 5e5 : 0) + (n.familia === 'ausencia' ? 2e5 : 0) + (n.familia === 'privado' ? 1e5 : 0) + (n.familia === 'territorio' || n.id.startsWith('MUN-') ? -5e4 : 0) + n.deg * 1000 - n.lw;
+    const cand = vis.filter(n => !keepSet || keepSet.has(n.id)).sort((a, b) => prio(b) - prio(a));
+    const puestos = [], pos = new Map();
+    let cupo = innerWidth < 600 && !keepSet ? 12 : Infinity;
+    for (const n of cand) {
+      if (cupo <= 0) break;
+      const h = radioPantalla(n, k), cx = t.applyX(n.x), cy = t.applyY(n.y), w = (n === focusNode || n === seleccion ? medir(n.lt, 600) : n.lw) + 8, d = 3, dg = h * .72;
+      const opciones = [[cx - w / 2, cy + h + d, 'middle'], [cx + h + d, cy - LH / 2, 'start'], [cx - h - d - w, cy - LH / 2, 'end'], [cx - w / 2, cy - h - d - LH, 'middle'],
+        [cx + dg + d, cy + dg, 'start'], [cx - dg - d - w, cy + dg, 'end'], [cx + dg + d, cy - dg - LH, 'start'], [cx - dg - d - w, cy - dg - LH, 'end']];
+      let ok = null;
+      for (const [x0, y0, a] of opciones) {
+        const rr = { x0, y0, x1: x0 + w, y1: y0 + LH };
+        if (x0 < 4 || y0 < 4 || rr.x1 > Wv - 4 || rr.y1 > Hv - 4) continue;
+        if (puestos.some(p => choca(p, rr)) || bloques.some(b => b.id !== n.id && choca(b, rr))) continue;
+        ok = { rr, a }; break;
+      }
+      if (!ok && (n === focusNode || n === seleccion)) { const [x0, y0, a] = opciones[0]; ok = { rr: { x0, y0, x1: x0 + w, y1: y0 + LH }, a }; }
+      if (ok) { puestos.push(ok.rr); pos.set(n.id, ok); cupo--; }
+    }
+    label.attr('display', n => pos.has(n.id) ? null : 'none')
+      .attr('font-size', FS / k).attr('stroke-width', 4 / k)
+      .attr('font-weight', n => n === focusNode || n === seleccion ? 600 : 500)
+      .attr('text-anchor', n => pos.get(n.id)?.a || 'middle')
+      .attr('x', n => { const p = pos.get(n.id); if (!p) return 0; const xs = p.a === 'middle' ? (p.rr.x0 + p.rr.x1) / 2 : p.a === 'start' ? p.rr.x0 + 2 : p.rr.x1 - 2; return t.invertX(xs); })
+      .attr('y', n => { const p = pos.get(n.id); return p ? t.invertY(p.rr.y0 + LH * .74) : 0; });
+    label.each(function (n) { this.textContent = n.lt; });
+    svg.attr('data-etiquetas', pos.size);
+    const hint = $('#label-hint'); if (hint) hint.textContent = keepSet ? `${pos.size} de ${cand.length} etiquetas del vecindario visibles` : `${pos.size} de ${vis.length} etiquetas visibles sin superposición · acerque o pase el cursor para ver el resto`;
+  }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { nodes.forEach(n => { n.lw = medir(n.lt); }); schedule(); });
   function nodeTT(n) {
     const f = FAM[n.familia], extra = n.familia === 'ausencia' && n.atributos && (n.atributos.evidencia_de_ausencia || n.atributos.contraste || n.atributos.cita);
     return `<div class="row" style="justify-content:flex-start;gap:8px;margin-bottom:4px">${glyph(n.familia)}<span class="label-m">${esc(f.label)}</span></div><div class="tt-sub" style="font-size:16px;line-height:22px">${esc(n.nombre)}</div>${extra ? `<div class="quote aus">${esc(extra)}</div>` : ''}<div class="body-s" style="margin-top:6px">${n.deg} vínculo${n.deg === 1 ? '' : 's'} · ${esc(n.plano_evidencia)} · ${esc(n.fuente)}</div>`;
   }
   function restyle() {
-    L.attr('stroke', l => linkStyle(l) === 'aus' ? css('--viz-critical') : css('--md-outline-variant')).attr('stroke-dasharray', l => ({ aus: '5 4', hip: '1 4', doc: null })[linkStyle(l)]);
-    shape.attr('fill', n => n.familia === 'ausencia' ? css('--md-surface-container-lowest') : col(n.familia)).attr('stroke', n => n.familia === 'ausencia' ? col('ausencia') : css('--md-surface-container-lowest')).attr('stroke-width', 2).attr('stroke-dasharray', n => n.familia === 'ausencia' ? '3 2.5' : null);
-    label.attr('display', n => (innerWidth < 600 ? n.deg >= 6 : (n.deg >= 3 || n.familia === 'ausencia' || n.familia === 'privado')) || n === seleccion ? null : 'none');
-    drawLegend();
+    L.attr('stroke', l => linkStyle(l) === 'aus' ? css('--net-aus') : css('--net-edge')).attr('stroke-opacity', l => linkStyle(l) === 'aus' ? 1 : .85).attr('stroke-dasharray', l => ({ aus: '5 4', hip: '1 4', doc: null })[linkStyle(l)]);
+    shape.attr('fill', n => n.familia === 'ausencia' ? css('--net-halo') : col(n.familia)).attr('stroke', n => n === seleccion ? css('--md-primary') : n.familia === 'ausencia' ? col('ausencia') : css('--net-halo')).attr('stroke-width', n => n === seleccion ? 4 : n.familia === 'ausencia' ? 2.2 : 1.5).attr('stroke-dasharray', n => n.familia === 'ausencia' ? '3 2.5' : null);
+    drawLegend(); schedule();
   }
   const sim = d3.forceSimulation(nodes)
     .force('link', d3.forceLink(links).id(d => d.id).distance(l => String(l.source.id || l.source).startsWith('MUN-') ? 45 : 70).strength(.7))
@@ -107,7 +156,9 @@
   sim.on('tick', () => {
     [L, Lhit].forEach(s => s.attr('x1', l => l.source.x).attr('y1', l => l.source.y).attr('x2', l => l.target.x).attr('y2', l => l.target.y));
     N.attr('transform', n => `translate(${n.x},${n.y})`);
+    if (sim.alpha() > sim.alphaMin() && sim.alphaTarget() > 0) schedule();
   });
+  sim.on('end.labels', schedule);
   sim.stop();
   for (let i = 0; i < 400; i++) sim.tick();
   sim.on('tick')();
@@ -130,11 +181,12 @@
   function vecinos(n) { const s = new Set([n.id]); n.out.forEach(l => s.add(l.target.id)); n.in.forEach(l => s.add(l.source.id)); return s; }
   function focusNeighborhood(n) {
     const qm = query ? new Set(nodes.filter(x => (x.nombre + ' ' + x.tipo).toLowerCase().includes(query)).map(x => x.id)) : null;
-    if (!n && !qm) { N.attr('opacity', x => visibles.has(x.familia) ? 1 : 0); L.attr('opacity', l => visibles.has(l.source.familia) && visibles.has(l.target.familia) ? 1 : 0); label.attr('display', x => (innerWidth < 600 ? x.deg >= 6 : (x.deg >= 3 || ['ausencia', 'privado'].includes(x.familia))) ? null : 'none'); return; }
+    if (!n && !qm) { keepSet = null; focusNode = null; N.attr('opacity', x => visibles.has(x.familia) ? 1 : 0); L.attr('opacity', l => visibles.has(l.source.familia) && visibles.has(l.target.familia) ? 1 : 0); schedule(); return; }
     const keep = n ? vecinos(n) : qm;
-    N.attr('opacity', x => !visibles.has(x.familia) ? 0 : keep.has(x.id) ? 1 : .15);
-    L.attr('opacity', l => !(visibles.has(l.source.familia) && visibles.has(l.target.familia)) ? 0 : (n ? (l.source === n || l.target === n) : (keep.has(l.source.id) && keep.has(l.target.id))) ? 1 : .08);
-    label.attr('display', x => keep.has(x.id) ? null : 'none');
+    keepSet = keep; focusNode = n || null;
+    N.attr('opacity', x => !visibles.has(x.familia) ? 0 : keep.has(x.id) ? 1 : .12);
+    L.attr('opacity', l => !(visibles.has(l.source.familia) && visibles.has(l.target.familia)) ? 0 : (n ? (l.source === n || l.target === n) : (keep.has(l.source.id) && keep.has(l.target.id))) ? 1 : .06);
+    schedule();
   }
   function applyVisibility() {
     N.attr('pointer-events', n => visibles.has(n.familia) ? null : 'none');
@@ -147,7 +199,7 @@
   /* panel lateral */
   function select(n) {
     seleccion = n; focusNeighborhood(n);
-    shape.attr('stroke-width', x => x === n ? 4 : 2).attr('stroke', x => x === n ? css('--md-primary') : x.familia === 'ausencia' ? col('ausencia') : css('--md-surface-container-lowest'));
+    restyle();
     const side = $('#side');
     if (!n) { side.innerHTML = `<div class="empty"><span class="material-symbols-outlined">touch_app</span><p class="title-m" style="color:var(--md-on-surface)">Seleccione un nodo</p><p class="body-m">El detalle muestra atributos, fuente y cada vínculo con su cita. Empiece por <button class="btn text" id="go-sitia" style="height:32px;padding:0 8px">SITIA</button> o por una ausencia.</p></div>`; $('#go-sitia').onclick = () => select(byId.get('PRG-SITIA')); return; }
     const f = FAM[n.familia];
@@ -200,6 +252,6 @@
   $('#auto').innerHTML = D.autorregistro.map(a => `<details class="exp"><summary><span class="material-symbols-outlined" style="color:var(--md-error)">report</span><span><span class="label-m muted">${esc(a.componente)}</span><br><span class="title-s">${esc(a.que_registro)}</span></span></summary><div class="body"><table class="data"><tbody><tr><td class="muted">Efecto</td><td>${esc(a.efecto)}</td></tr><tr><td class="muted">Inexactitud</td><td>${esc(a.inexactitud)}</td></tr><tr><td class="muted">Detección</td><td>${esc(a.deteccion)}</td></tr><tr><td class="muted">Corrección</td><td>${esc(a.correccion || 'No requerida')}</td></tr></tbody></table></div></details>`).join('');
   $('#fuentes').innerHTML = `<table class="data"><thead><tr><th>Fuente</th><th>Publicación</th><th>Acceso</th><th>Plano</th><th>Nota</th></tr></thead><tbody>${D.fuentes.map(f => `<tr><td>${f.url ? `<a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.nombre)}</a>` : esc(f.nombre)}<div class="body-s muted">${esc(f.institucion)}</div></td><td>${esc(f.fecha_publicacion || f.anio_referencia)}</td><td class="body-s" style="font-family:var(--mono)">${esc(f.via_acceso)}</td><td><span class="badge ${f.plano_evidencia === 'documentado' ? 'pri' : 'err'}">${esc(f.plano_evidencia)}</span></td><td class="body-s muted">${esc(f.nota_homologacion)}</td></tr>`).join('')}</tbody></table>`;
 
-  let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { fit(0); drawIA(); }, 150); });
+  let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { fit(0); drawIA(); schedule(); }, 150); });
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { setIcon(); restyle(); drawIA(); });
 })();
