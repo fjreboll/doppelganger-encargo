@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Grafo del encargo · SITIA</title>
+<meta name="description" content="La ontología de fusión aplicada hacia arriba: actores, instrumentos y ausencias del encargo SITIA, con fuente y cita en cada vínculo. POC Doppelganger (C).">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23415f91'/><g stroke='white' stroke-width='2'><line x1='10' y1='10' x2='22' y2='16'/><line x1='10' y1='22' x2='22' y2='16'/></g><circle cx='10' cy='10' r='3.5' fill='white'/><circle cx='10' cy='22' r='3.5' fill='white'/><circle cx='22' cy='16' r='4.5' fill='none' stroke='%23ffb4ab' stroke-width='2' stroke-dasharray='2.5 2'/></svg>">
+<link rel="stylesheet" href="assets/m3.css">
+<style>
+.hero{padding:32px 0 8px}.hero .display-m{max-width:900px;margin:12px 0 16px}.hero .body-l{max-width:780px}
+.stat .v{font:400 45px/52px var(--font);margin:4px 0}
+.stat .ic{width:40px;height:40px;border-radius:var(--shape-m);display:grid;place-items:center;background:var(--md-primary-container);color:var(--md-on-primary-container);margin-bottom:12px}
+.stat.err .ic{background:var(--md-error-container);color:var(--md-on-error-container)}
+.toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:12px}
+.textfield{position:relative;display:flex;align-items:center;height:48px;border:1px solid var(--md-outline);border-radius:var(--shape-xs);padding:0 12px;gap:8px;min-width:min(100%,300px);background:var(--md-surface)}
+.textfield:focus-within{border:2px solid var(--md-primary);padding:0 11px}
+.textfield input{border:0;outline:0;background:transparent;color:var(--md-on-surface);font:400 16px/24px var(--font);letter-spacing:.5px;flex:1;min-width:0}
+.textfield .material-symbols-outlined{color:var(--md-on-surface-variant)}
+.layout{display:grid;gap:16px;grid-template-columns:minmax(0,1fr) 380px;align-items:start}
+@media (max-width:1000px){.layout{grid-template-columns:1fr}}
+.graph-card{padding:0;overflow:hidden;position:relative}
+#graph{width:100%;height:680px;display:block;touch-action:none;background:var(--md-surface-container-lowest)}
+@media (max-width:600px){#graph{height:520px}}
+.fab-set{position:absolute;right:16px;bottom:16px;display:flex;flex-direction:column;gap:8px}
+.fab{width:40px;height:40px;border-radius:var(--shape-m);border:0;background:var(--md-secondary-container);color:var(--md-on-secondary-container);box-shadow:var(--md-elev-2);display:grid;place-items:center;cursor:pointer}
+.fab:hover{box-shadow:var(--md-elev-3)}
+.legend-card{position:absolute;left:12px;top:12px;max-width:260px;padding:12px 14px;border-radius:var(--shape-m);background:color-mix(in srgb,var(--md-surface-container) 92%,transparent);font-size:12px;line-height:16px;color:var(--md-on-surface-variant);backdrop-filter:blur(6px)}
+.legend-card .row{display:flex;align-items:center;gap:8px;margin:3px 0}
+.legend-card svg{flex:none}
+.legend-card summary{cursor:pointer;font:500 12px/16px var(--font);letter-spacing:.5px;color:var(--md-on-surface);list-style:none;display:flex;align-items:center;gap:6px}
+.legend-card summary::-webkit-details-marker{display:none}
+.side{position:sticky;top:80px;max-height:calc(100vh - 96px);overflow:auto}
+@media (max-width:1000px){.side{position:static;max-height:none}}
+.side .kv{display:grid;grid-template-columns:110px minmax(0,1fr);gap:6px 12px;font-size:14px;line-height:20px;margin:12px 0}
+.side .kv dt{color:var(--md-on-surface-variant)}.side .kv dd{margin:0;overflow-wrap:anywhere}
+.edge-item{padding:10px 0;border-top:1px solid var(--md-outline-variant);font-size:14px;line-height:20px}
+.edge-item button{all:unset;cursor:pointer;color:var(--md-primary);font-weight:500}
+.edge-item button:focus-visible{outline:2px solid var(--md-primary)}
+.quote{margin-top:4px;padding:8px 12px;border-left:3px solid var(--md-outline-variant);color:var(--md-on-surface-variant);font-size:13px;line-height:18px;background:var(--md-surface-container-low);border-radius:0 var(--shape-s) var(--shape-s) 0}
+.quote.aus{border-left:3px dashed var(--viz-critical)}
+.empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:32px 12px;color:var(--md-on-surface-variant)}
+.empty .material-symbols-outlined{font-size:40px;color:var(--md-outline)}
+.aus-card{border:1px dashed var(--viz-critical)!important}
+.aus-card .material-symbols-outlined{color:var(--md-error)}
+.node text{fill:var(--md-on-surface-variant);paint-order:stroke;stroke:var(--md-surface-container-lowest);stroke-width:3px;stroke-linejoin:round;pointer-events:none}
+.node{cursor:pointer}
+.node:focus,.node:focus-visible{outline:none}.node:focus-visible .shape{stroke:var(--md-primary);stroke-width:3px}
+.link{cursor:pointer}
+.axis text{fill:var(--viz-muted);font-size:12px}.axis path,.axis line{stroke:var(--viz-axis)}
+.gridline line{stroke:var(--viz-grid)}.gridline path{display:none}
+.notice{display:flex;gap:12px;padding:12px 16px;border-radius:var(--shape-m);background:var(--md-tertiary-container);color:var(--md-on-tertiary-container);margin-top:16px}
+@media (max-width:600px){.hide-s{display:none}.stat .v{font-size:36px;line-height:44px}.legend-card{position:static;max-width:none;border-radius:0}}
+</style>
+</head>
+<body>
+<header class="top-app-bar" id="appbar">
+  <span class="material-symbols-outlined" style="color:var(--md-primary);font-size:24px;margin:0 8px 0 4px">hub</span>
+  <div class="title title-l">Grafo del encargo · SITIA</div>
+  <a class="btn text" href="https://fjreboll.github.io/doppelganger-doble/" title="Ir al dashboard DOBLE"><span class="material-symbols-outlined">difference</span><span class="hide-s">DOBLE A</span></a>
+  <button class="icon-btn" id="theme" aria-label="Cambiar tema"><span class="material-symbols-outlined">dark_mode</span></button>
+  <a class="icon-btn" href="https://github.com/fjreboll/doppelganger-encargo" aria-label="Código en GitHub"><span class="material-symbols-outlined">code</span></a>
+</header>
+
+<main>
+<div class="wrap hero">
+  <span class="overline">Doppelganger · Prueba de concepto C · genealogía del encargo</span>
+  <h1 class="display-m">La ontología de fusión, apuntada hacia arriba.</h1>
+  <p class="body-l muted">Las plataformas de fusión vinculan personas, lugares y eventos para volver legible a la población. Este grafo aplica la misma operación al Estado y a sus proveedores: organismos, empresas, instrumentos y personas en su rol público del Sistema Integrado de Teleprotección con Inteligencia Artificial (SITIA). Cada vínculo lleva fuente y cita. Las <b>ausencias</b>, lo que el encargo no documenta, son objetos de primera clase.</p>
+</div>
+<div class="wrap"><div class="grid g-4" id="stats" style="margin:24px 0 8px"></div></div>
+
+<section class="wrap" id="grafo">
+  <div class="sec-head"><div><span class="overline">01 · Red</span><h2 class="headline-s">Actores, instrumentos y ausencias</h2><p class="body-m muted" style="margin-top:4px">Pase el cursor por nodos y vínculos para ver su evidencia; seleccione un nodo para fijar el detalle. Arrastre para mover, pellizque o use la rueda para acercar.</p></div></div>
+  <div class="toolbar">
+    <label class="textfield"><span class="material-symbols-outlined">search</span><input id="q" type="search" placeholder="Buscar actor, instrumento o ausencia" aria-label="Buscar en el grafo"></label>
+    <div class="chip-set scroll-s" id="chips" role="group" aria-label="Familias visibles"></div>
+  </div>
+  <div class="layout">
+    <div class="card graph-card">
+      <svg id="graph" role="img" aria-label="Grafo de red del encargo SITIA"></svg>
+      <details class="legend-card" open id="legend"><summary><span class="material-symbols-outlined" style="font-size:18px">legend_toggle</span>Leyenda</summary><div id="legend-body"></div></details>
+      <div class="fab-set">
+        <button class="fab" id="zin" aria-label="Acercar"><span class="material-symbols-outlined">add</span></button>
+        <button class="fab" id="zout" aria-label="Alejar"><span class="material-symbols-outlined">remove</span></button>
+        <button class="fab" id="zfit" aria-label="Reencuadrar"><span class="material-symbols-outlined">fit_screen</span></button>
+      </div>
+    </div>
+    <aside class="card elevated side" id="side" aria-live="polite"></aside>
+  </div>
+  <div class="notice"><span class="material-symbols-outlined">info</span><p class="body-m">La evidencia de cada vínculo se obtuvo por extracción asistida desde las fuentes enlazadas: es paráfrasis (en algunos casos en inglés, tal como la devolvió el extractor), no cita literal, y debe verificarse contra el texto original antes de citarse. Ninguna empresa se funde con registros externos sin RUT.</p></div>
+</section>
+
+<section class="wrap" id="ausencias">
+  <div class="sec-head"><div><span class="overline">02 · Antirregistro</span><h2 class="headline-s">Lo que el encargo no documenta</h2></div></div>
+  <div class="grid g-3" id="aus"></div>
+</section>
+
+<section class="wrap" id="material">
+  <div class="grid g-2">
+    <div class="card chart-card">
+      <span class="overline">03 · Capa material</span><h3 class="title-m" style="margin:4px 0 2px">Sociedades constituidas con «inteligencia artificial» en su razón social</h3>
+      <p class="body-m muted">Registro de Empresas y Sociedades (Ley 20.659), por año. Agregado, sin razones sociales. 2026 parcial (hasta junio).</p>
+      <svg id="c-ia" style="width:100%;display:block;margin-top:12px" role="img" aria-label="Constituciones por año"></svg>
+    </div>
+    <div class="card">
+      <span class="overline">04 · Resolución de entidades</span><h3 class="title-m" style="margin:4px 0 12px">Por qué no se fusiona por nombre</h3>
+      <div class="scroll-x" id="res"></div>
+      <p class="body-m muted" style="margin-top:12px">La búsqueda por subcadena devuelve razones sociales ajenas; la coincidencia por palabra no prueba identidad. Sin RUT, cada vínculo sería una divergencia fabricada por el propio grafo.</p>
+    </div>
+  </div>
+</section>
+
+<section class="wrap" id="tabla">
+  <div class="sec-head"><div><span class="overline">05 · Vista tabular</span><h2 class="headline-s">Todos los vínculos con su evidencia</h2></div></div>
+  <div class="card scroll-x" id="tabla-v"></div>
+</section>
+
+<section class="wrap" id="metodo">
+  <h3 class="title-l" style="margin:8px 0 12px">Autorregistro</h3>
+  <div id="auto"></div>
+  <h3 class="title-l" style="margin:32px 0 12px">Fuentes</h3>
+  <div class="card scroll-x" id="fuentes"></div>
+</section>
+</main>
+
+<footer><div class="wrap grid g-3">
+  <div><p class="title-m">Doppelganger · POC v0.1</p><p class="body-m muted">Programa de dispositivos de diseño crítico sobre divergencia algorítmica en herramientas dotadas de IA en lo público del Cono Sur. Doctorado en Arquitectura, Diseño y Estudios Urbanos UC.</p></div>
+  <div><p class="title-s">Criterios</p><p class="body-m muted">Solo actores institucionales y personas en su rol público, con fuente pública enlazada. Planos de evidencia: documentado, reconstrucción, hipótesis.</p></div>
+  <div><p class="title-s">Enlaces</p><p class="body-m"><a href="https://fjreboll.github.io/doppelganger-doble/">A · DOBLE</a><br><a href="https://github.com/fjreboll/doppelganger-encargo">Código y datos del sitio</a></p><p class="body-s muted" id="gen"></p></div>
+</div></footer>
+<div class="tooltip" id="tt" role="tooltip"></div>
+<script src="assets/d3.v7.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
