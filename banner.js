@@ -173,7 +173,7 @@
   $('.px-camaras').textContent = prog.camaras; $('.px-lectores').textContent = prog.lectores_patentes; $('.px-comunas').textContent = prog.comunas_RM;
   const CORTO = { 'AUS-PROTOCOLO-ERROR': 'falsos positivos', 'AUS-PROVEEDOR-FAQ': 'proveedor', 'AUS-RETENCION': 'retención', 'AUS-CODIGO-LICIT': 'licitación', 'AUS-REGISTRO-DIV': 'registro de errores', 'AUS-NOMINA-ETICA': 'comité de ética' };
   const lista = $('.px-aus');
-  aus.forEach(n => { const li = document.createElement('li'); const b = document.createElement('button'); b.type = 'button'; b.textContent = CORTO[n.id] || n.nombre.split(' (')[0]; b.title = n.nombre + ' · ver en el grafo'; b.onclick = () => window.panoptes?.ver(n.id); li.append(b); lista.append(li); });
+  aus.forEach(n => { const li = document.createElement('li'); const b = document.createElement('button'); b.type = 'button'; b.textContent = CORTO[n.id] || n.nombre.split(' (')[0]; b.title = n.nombre + ' · ver en el grafo'; b.onclick = () => window.beholder?.ver(n.id); li.append(b); lista.append(li); });
   $('.px-aus-n').textContent = aus.length;
 
   const btn = $('.px-play');
@@ -204,10 +204,10 @@
     const b = cv.getBoundingClientRect(), x = Math.floor((e.clientX - b.left) / b.width * grid.cols), y = Math.floor((e.clientY - b.top) / b.height * grid.rows);
     const enHub = Math.abs(x - hub.x - 3) <= 5 && Math.abs(y - hub.y - 3) <= 5, cam = camaras.find(q => x >= q.x - 1 && x <= q.x + 5 && y >= q.y - 1 && y <= q.y + 4);
     tt.classList.remove('on');
-    if (enHub || cam) window.panoptes?.ver('PRG-SITIA');
-    else if (porIndice[M[y * grid.cols + x]]) window.panoptes?.ver('TER-RM');
+    if (enHub || cam) window.beholder?.ver('PRG-SITIA');
+    else if (porIndice[M[y * grid.cols + x]]) window.beholder?.ver('TER-RM');
   });
-  $('.px-hub').style.pointerEvents = 'auto'; $('.px-hub').style.cursor = 'pointer'; $('.px-hub').onclick = () => window.panoptes?.ver('PRG-SITIA');
+  $('.px-hub').style.pointerEvents = 'auto'; $('.px-hub').style.cursor = 'pointer'; $('.px-hub').onclick = () => window.beholder?.ver('PRG-SITIA');
 
   function estatico() {
     pulsos = [];

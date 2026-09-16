@@ -1,4 +1,4 @@
-# Panoptes · Grafo del encargo SITIA (Doppelgänger C)
+# Beholder · Grafo del encargo SITIA (Doppelgänger C)
 
 **Sitio:** https://fjreboll.github.io/doppelganger-encargo/ · **Par:** [Santiago Gemelo Digital (A)](https://fjreboll.github.io/doppelganger-doble/)
 

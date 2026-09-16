@@ -212,7 +212,7 @@
   }
   select(null);
   /* API para el banner y la navegación: seleccionar un nodo y llevar la vista al grafo */
-  window.panoptes = {
+  window.beholder = {
     ver(id) {
       const n = byId.get(id); if (!n) return;
       if (!visibles.has(n.familia)) document.querySelector(`#chips [data-f="${n.familia}"], #chips [data-fam="${n.familia}"]`)?.click();
@@ -227,7 +227,7 @@
       ${a.evidencia_de_ausencia || a.contraste || a.cita ? `<div class="quote aus" style="margin-top:8px">${esc(a.evidencia_de_ausencia || a.contraste || a.cita)}</div>` : ''}
       <p class="body-s muted" style="margin-top:8px">${via ? `${esc(nombre(via.source))} → ${esc(TIPO_V(via.tipo))}` : ''} · ${n.url ? `<a href="${esc(n.url)}" target="_blank" rel="noopener">${esc(n.fuente)}</a>` : esc(n.fuente)}</p>
       <button class="btn text" style="margin:8px 0 0 -12px" data-id="${esc(n.id)}"><span class="material-symbols-outlined">my_location</span>Ver en el grafo</button></article>`; }).join('');
-  $('#aus').querySelectorAll('button').forEach(b => b.onclick = () => window.panoptes.ver(b.dataset.id));
+  $('#aus').querySelectorAll('button').forEach(b => b.onclick = () => window.beholder.ver(b.dataset.id));
 
   /* resolución de entidades */
   const resA = D.autorregistro.find(a => a.componente === 'C·resolución');
