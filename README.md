@@ -16,8 +16,9 @@ Red de nodos de la prueba de concepto C del programa *Doppelganger*: la ontolog�
 | Ruta | Contenido |
 |---|---|
 | `index.html`, `app.js` | Interfaz (Material Design 3; grafo de fuerzas D3 con tooltips, filtros, búsqueda, panel de detalle y vista tabular) |
+| `banner.js`, `assets/banner_grid_sitia.json` | Banner pixel art: RM rasterizada con las 12 comunas que SITIA nombra como colaboradoras, cámaras (ubicación ilustrativa) enviando lecturas a un centro, cifras declaradas y las ausencias del grafo |
 | `data.json` | Objetos, vínculos, fuentes y autorregistro exportados desde la base común |
-| `assets/` | Hoja de estilo M3, D3 v7 y tipografías auto-alojadas |
+| `assets/` | Hoja de estilo M3, D3 v7 y tipografías auto-alojadas (incl. Pixelify Sans y VT323, SIL OFL) |
 
 El código que genera `data.json` vive en [`doppelganger-doble/pipeline`](https://github.com/fjreboll/doppelganger-doble/tree/main/pipeline) (`04_grafo_encargo.py`, semilla `data/seeds/encargo_sitia.json`, adaptadores para Mercado Público e InfoLobby aún no ejecutados).
 

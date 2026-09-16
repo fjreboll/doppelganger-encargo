@@ -44,8 +44,8 @@
 
   /* stats */
   const fuentesDoc = D.fuentes.filter(f => f.plano_evidencia === 'documentado').length;
-  $('#stats').innerHTML = [['scatter_plot', nodes.length, 'objetos', 'actores, instrumentos, territorios'], ['conversion_path', links.length, 'vínculos', 'cada uno con fuente y cita'],
-    ['report', aus.length, 'ausencias', 'lo que el encargo no documenta', 'err'], ['menu_book', D.fuentes.length, 'fuentes', `${fuentesDoc} documentadas · ${D.fuentes.length - fuentesDoc} reconstrucción o hipótesis`]]
+  $('#stats').innerHTML = [['scatter_plot', nodes.length, 'objetos', 'actores y documentos'], ['conversion_path', links.length, 'vínculos', 'todos con fuente'],
+    ['report', aus.length, 'ausencias', 'sin documentar', 'err'], ['menu_book', D.fuentes.length, 'fuentes', `${fuentesDoc} documentadas`]]
     .map(([ic, v, l, s, c]) => `<div class="card elevated stat ${c || ''}"><div class="ic"><span class="material-symbols-outlined">${ic}</span></div><div class="label-l muted">${l}</div><div class="v">${v}</div><div class="body-s muted">${s}</div></div>`).join('');
   $('#gen').textContent = 'Datos generados el ' + D.generado;
 
@@ -136,7 +136,7 @@
       .attr('y', n => { const p = pos.get(n.id); return p ? t.invertY(p.rr.y0 + LH * .74) : 0; });
     label.each(function (n) { this.textContent = n.lt; });
     svg.attr('data-etiquetas', pos.size);
-    const hint = $('#label-hint'); if (hint) hint.textContent = keepSet ? `${pos.size} de ${cand.length} etiquetas del vecindario visibles` : `${pos.size} de ${vis.length} etiquetas visibles sin superposición · acerque o pase el cursor para ver el resto`;
+    const hint = $('#label-hint'); if (hint) hint.textContent = keepSet ? `${pos.size} de ${cand.length} nombres visibles` : `${pos.size} de ${vis.length} nombres visibles · acerque para ver más`;
   }
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { nodes.forEach(n => { n.lw = medir(n.lt); }); schedule(); });
   function nodeTT(n) {
@@ -201,7 +201,7 @@
     seleccion = n; focusNeighborhood(n);
     restyle();
     const side = $('#side');
-    if (!n) { side.innerHTML = `<div class="empty"><span class="material-symbols-outlined">touch_app</span><p class="title-m" style="color:var(--md-on-surface)">Seleccione un nodo</p><p class="body-m">El detalle muestra atributos, fuente y cada vínculo con su cita. Empiece por <button class="btn text" id="go-sitia" style="height:32px;padding:0 8px">SITIA</button> o por una ausencia.</p></div>`; $('#go-sitia').onclick = () => select(byId.get('PRG-SITIA')); return; }
+    if (!n) { side.innerHTML = `<div class="empty"><span class="material-symbols-outlined">touch_app</span><p class="title-m" style="color:var(--md-on-surface)">Seleccione un nodo</p><p class="body-m">Ver fuente y vínculos. Pruebe con <button class="btn text" id="go-sitia" style="height:32px;padding:0 8px">SITIA</button> o una ausencia.</p></div>`; $('#go-sitia').onclick = () => select(byId.get('PRG-SITIA')); return; }
     const f = FAM[n.familia];
     const attrs = Object.entries(n.atributos || {}).map(([k, v]) => `<dt>${esc(k.replaceAll('_', ' '))}</dt><dd>${esc(typeof v === 'object' ? JSON.stringify(v).replace(/[{}"]/g, '').replaceAll(',', ', ') : v)}</dd>`).join('');
     const item = (l, dir) => { const o = dir === 'out' ? l.target : l.source; return `<div class="edge-item"><span class="muted">${dir === 'out' ? '→' : '←'} ${esc(TIPO_V(l.tipo))}</span> <button data-id="${esc(o.id)}">${esc(nombre(o))}</button><div class="quote ${linkStyle(l) === 'aus' ? 'aus' : ''}">${esc(l.cita)}</div><div class="body-s muted" style="margin-top:4px">${l.fecha ? esc(l.fecha) + ' · ' : ''}${l.url ? `<a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.fuente)}</a>` : esc(l.fuente)}</div></div>`; };

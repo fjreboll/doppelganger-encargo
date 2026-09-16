@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Grafo del encargo · SITIA</title>
-<meta name="description" content="La ontología de fusión aplicada hacia arriba: actores, instrumentos y ausencias del encargo SITIA, con fuente y cita en cada vínculo. POC Doppelganger (C).">
+<meta name="description" content="Quién encarga, provee y opera SITIA, con fuente en cada vínculo y lo que no se documenta.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23415f91'/><g stroke='white' stroke-width='2'><line x1='10' y1='10' x2='22' y2='16'/><line x1='10' y1='22' x2='22' y2='16'/></g><circle cx='10' cy='10' r='3.5' fill='white'/><circle cx='10' cy='22' r='3.5' fill='white'/><circle cx='22' cy='16' r='4.5' fill='none' stroke='%23ffb4ab' stroke-width='2' stroke-dasharray='2.5 2'/></svg>">
 <link rel="stylesheet" href="assets/m3.css">
 <style>
@@ -52,6 +52,55 @@
 .link{cursor:pointer}
 .axis text{fill:var(--viz-muted);font-size:12px}.axis path,.axis line{stroke:var(--viz-axis)}
 .gridline line{stroke:var(--viz-grid)}.gridline path{display:none}
+@font-face{font-family:"Pixelify Sans";font-style:normal;font-display:swap;font-weight:400;src:url(assets/fonts/pixelify-sans-latin-400-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Pixelify Sans";font-style:normal;font-display:swap;font-weight:400;src:url(assets/fonts/pixelify-sans-latin-ext-400-normal.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+1E00-1E9F,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:"Pixelify Sans";font-style:normal;font-display:swap;font-weight:600;src:url(assets/fonts/pixelify-sans-latin-600-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Pixelify Sans";font-style:normal;font-display:swap;font-weight:600;src:url(assets/fonts/pixelify-sans-latin-ext-600-normal.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+1E00-1E9F,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:"VT323";font-style:normal;font-display:swap;font-weight:400;src:url(assets/fonts/vt323-latin-400-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"VT323";font-style:normal;font-display:swap;font-weight:400;src:url(assets/fonts/vt323-latin-ext-400-normal.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+1E00-1E9F,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+.px-wrap{padding-top:16px}
+.px-banner{--px:"Pixelify Sans",var(--mono);--vt:"VT323",var(--mono);position:relative;border-radius:var(--shape-l);overflow:hidden;background:#0c0e13;color:#e2e2e9;box-shadow:var(--md-elev-1);font-family:var(--vt);font-size:18px;line-height:20px;letter-spacing:.2px}
+.px-stage{position:relative;aspect-ratio:var(--aspect,300/106)}
+.px-stage canvas{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges;display:block;cursor:crosshair}
+.px-labels{position:absolute;inset:0;pointer-events:none}
+.px-label{position:absolute;display:flex;flex-direction:column;gap:0;padding:2px 8px 3px;background:rgba(12,14,19,.88);font-size:20px;line-height:19px;white-space:nowrap;letter-spacing:.3px;box-shadow:0 0 0 2px #0c0e13}
+.px-label .n{color:#fff}.px-label .v{color:#c4c6d0;font-size:17px;line-height:16px}
+.px-label.end{transform:translate(calc(-100% - 22px),-50%);border-right:3px solid #e2e2e9;text-align:right}
+.px-label.start{transform:translate(22px,-50%);border-left:3px solid #e2e2e9}
+.px-copy{position:absolute;left:0;top:0;bottom:0;width:44%;padding:24px 28px;display:flex;flex-direction:column;gap:10px;background:linear-gradient(90deg,#0c0e13 0,#0c0e13 62%,rgba(12,14,19,0))}
+.px-kicker{font-size:17px;line-height:18px;letter-spacing:1.5px;color:#aac7ff;text-transform:uppercase}
+.px-title{font-family:var(--px);font-weight:600;font-size:64px;line-height:56px;letter-spacing:2px;color:#fff;margin:0;text-shadow:4px 4px 0 #b3261e}
+.px-sub{font-size:20px;line-height:21px;color:#c4c6d0;max-width:30ch}
+.px-counter{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;font-size:20px;color:#c4c6d0}
+.px-mes{padding:0 8px;background:#e2e2e9;color:#0c0e13;letter-spacing:1px}
+.px-total{font-family:var(--px);font-size:28px;line-height:28px;color:#fff;font-weight:600}
+.px-bar{height:8px;background:#1d2024;box-shadow:inset 0 0 0 2px #2e3139;max-width:280px}.px-bar i{display:block;height:100%;background:#ff8a80;transition:width .2s steps(4)}
+.px-legend{list-style:none;margin:2px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:2px 14px;font-size:18px;line-height:19px;color:#c4c6d0}
+.px-legend .px-sprites{display:flex;align-items:center;gap:6px}.px-ico{width:15px;height:auto;image-rendering:pixelated;margin-left:4px}.px-note{color:#8e9099}
+.px-legend i{display:inline-block;width:10px;height:10px;margin-right:6px;vertical-align:-1px;box-shadow:0 0 0 1px #0c0e13}
+.px-ctrl{position:absolute;right:12px;bottom:10px;display:flex;align-items:center;gap:8px;padding:4px 10px 4px 4px;background:rgba(12,14,19,.86);border-radius:var(--shape-full)}
+.px-ctrl .icon-btn{color:#e2e2e9}.px-ctrl .icon-btn:hover{background:rgba(226,226,233,.12)}
+.px-range{width:140px;accent-color:#ff8a80}
+.px-src{position:absolute;left:28px;bottom:10px;font-size:15px;line-height:15px;color:#8e9099;letter-spacing:.3px;max-width:40%}
+@media (max-width:639px){
+ .px-copy{position:static;width:auto;background:none;padding:16px 16px 12px}
+ .px-title{font-size:44px;line-height:42px}
+ .px-src{position:static;max-width:none;padding:0 16px 12px}
+ .px-label{font-size:17px;line-height:16px;padding:1px 6px 2px}.px-label .v{font-size:15px;line-height:14px}
+ .px-label.end{transform:translate(calc(-100% - 10px),-50%)}.px-label.start{transform:translate(10px,-50%)}
+ .px-ctrl{right:8px;bottom:8px}.px-range{width:90px}
+}
+@media (min-width:640px) and (max-width:1000px){.px-copy{width:50%;padding:18px}.px-title{font-size:48px;line-height:44px}.px-sub{display:none}.px-label{font-size:18px}.px-label .v{display:none}}
+
+.px-hub{position:absolute;transform:translate(-50%,4px);font-size:18px;line-height:16px;padding:1px 6px 2px;background:rgba(12,14,19,.88);color:#aac7ff;letter-spacing:1px;white-space:nowrap;pointer-events:none}
+.px-stats{display:grid;grid-template-columns:repeat(3,auto);gap:2px 16px;justify-content:start}
+.px-stats b{display:block;font-family:var(--vt);font-weight:400;font-size:34px;line-height:28px;color:#fff}.px-stats span{font-size:17px;color:#c4c6d0}
+.px-aus-t{font-size:18px;color:#ff8a80;margin-top:2px}
+.px-aus{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4px 6px;max-width:40ch}
+.px-aus li{font-size:16px;line-height:16px;padding:2px 6px;white-space:nowrap;border:1px dashed #ff8a80;color:#e2e2e9}
+.px-aus li::before{content:"? ";color:#ff8a80}
+@media (min-width:640px) and (max-width:1100px){.px-aus{display:none}}
+
 .notice{display:flex;gap:12px;padding:12px 16px;border-radius:var(--shape-m);background:var(--md-tertiary-container);color:var(--md-on-tertiary-container);margin-top:16px}
 @media (max-width:600px){.hide-s{display:none}.stat .v{font-size:36px;line-height:44px}.legend-card{position:static;max-width:none;border-radius:0}}
 </style>
@@ -66,17 +115,41 @@
 </header>
 
 <main>
+<div class="wrap px-wrap">
+  <div id="banner" class="px-banner" role="region" aria-labelledby="px-title">
+    <div class="px-stage">
+      <canvas role="img" aria-label="Mapa pixelado de la Región Metropolitana con las 12 municipalidades nombradas por SITIA, cámaras y flujos hacia un centro"></canvas>
+      <div class="px-labels" aria-hidden="true"><span class="px-hub">CENTRO SITIA</span></div>
+      <div class="px-ctrl"><button class="icon-btn px-play" aria-label="Pausar animación"><span class="material-symbols-outlined">pause</span></button></div>
+    </div>
+    <div class="px-copy">
+      <p class="px-kicker">Doppelganger · prueba C</p>
+      <h2 class="px-title" id="px-title">SITIA</h2>
+      <p class="px-sub">Quién mira, con qué y qué no se documenta.</p>
+      <div class="px-stats"><div><b class="px-camaras">—</b><span>cámaras</span></div><div><b class="px-lectores">—</b><span>lectores de patentes</span></div><div><b class="px-comunas">—</b><span>comunas RM</span></div></div>
+      <ul class="px-legend">
+        <li><i style="background:#3987e5"></i>Nombrada (12)</li>
+        <li><i style="background:#2e3139"></i>Sin nombre en la fuente</li>
+        <li><i style="background:#b9bcc6;box-shadow:inset -3px 0 0 #ff8a80"></i>Cámara (ubicación ilustrativa)</li>
+      </ul>
+      <p class="px-aus-t"><span class="px-aus-n">6</span> cosas sin documentar</p>
+      <ul class="px-aus"></ul>
+    </div>
+    <p class="px-src">sitia.gob.cl · límites BCN · cifras declaradas por el programa</p>
+  </div>
+</div>
+
 <div class="wrap hero">
-  <span class="overline">Doppelganger · Prueba de concepto C · genealogía del encargo</span>
-  <h1 class="display-m">La ontología de fusión, apuntada hacia arriba.</h1>
-  <p class="body-l muted">Las plataformas de fusión vinculan personas, lugares y eventos para volver legible a la población. Este grafo aplica la misma operación al Estado y a sus proveedores: organismos, empresas, instrumentos y personas en su rol público del Sistema Integrado de Teleprotección con Inteligencia Artificial (SITIA). Cada vínculo lleva fuente y cita. Las <b>ausencias</b>, lo que el encargo no documenta, son objetos de primera clase.</p>
+  <span class="overline">Doppelganger · prueba C</span>
+  <h1 class="display-m">La fusión de datos, apuntada al Estado.</h1>
+  <p class="body-l muted">Organismos, empresas, normas y cargos detrás de SITIA. Cada vínculo tiene fuente; lo que falta también es un dato.</p>
 </div>
 <div class="wrap"><div class="grid g-4" id="stats" style="margin:24px 0 8px"></div></div>
 
 <section class="wrap" id="grafo">
-  <div class="sec-head"><div><span class="overline">01 · Red</span><h2 class="headline-s">Actores, instrumentos y ausencias</h2><p class="body-m muted" style="margin-top:4px">Pase el cursor por nodos y vínculos para ver su evidencia; seleccione un nodo para fijar el detalle. Arrastre para mover, pellizque o use la rueda para acercar.</p></div></div>
+  <div class="sec-head"><div><span class="overline">01 · Red</span><h2 class="headline-s">Actores y ausencias</h2><p class="body-m muted" style="margin-top:4px">Pase el cursor para ver la evidencia. Clic para fijar.</p></div></div>
   <div class="toolbar">
-    <label class="textfield"><span class="material-symbols-outlined">search</span><input id="q" type="search" placeholder="Buscar actor, instrumento o ausencia" aria-label="Buscar en el grafo"></label>
+    <label class="textfield"><span class="material-symbols-outlined">search</span><input id="q" type="search" placeholder="Buscar" aria-label="Buscar en el grafo"></label>
     <div class="chip-set scroll-s" id="chips" role="group" aria-label="Familias visibles"></div>
   </div>
   <div class="layout">
@@ -92,31 +165,31 @@
     </div>
     <aside class="card elevated side" id="side" aria-live="polite"></aside>
   </div>
-  <div class="notice"><span class="material-symbols-outlined">info</span><p class="body-m">La evidencia de cada vínculo se obtuvo por extracción asistida desde las fuentes enlazadas: es paráfrasis (en algunos casos en inglés, tal como la devolvió el extractor), no cita literal, y debe verificarse contra el texto original antes de citarse. Ninguna empresa se funde con registros externos sin RUT.</p></div>
+  <div class="notice"><span class="material-symbols-outlined">info</span><p class="body-m">La evidencia es paráfrasis extraída de la fuente, no cita literal. Verificar antes de citar.</p></div>
 </section>
 
 <section class="wrap" id="ausencias">
-  <div class="sec-head"><div><span class="overline">02 · Antirregistro</span><h2 class="headline-s">Lo que el encargo no documenta</h2></div></div>
+  <div class="sec-head"><div><span class="overline">02 · Antirregistro</span><h2 class="headline-s">Lo que no se documenta</h2></div></div>
   <div class="grid g-3" id="aus"></div>
 </section>
 
 <section class="wrap" id="material">
   <div class="grid g-2">
     <div class="card chart-card">
-      <span class="overline">03 · Capa material</span><h3 class="title-m" style="margin:4px 0 2px">Sociedades constituidas con «inteligencia artificial» en su razón social</h3>
-      <p class="body-m muted">Registro de Empresas y Sociedades (Ley 20.659), por año. Agregado, sin razones sociales. 2026 parcial (hasta junio).</p>
+      <span class="overline">03 · Mercado</span><h3 class="title-m" style="margin:4px 0 2px">Empresas nuevas con «inteligencia artificial» en el nombre</h3>
+      <p class="body-m muted">Registro de Empresas y Sociedades. 2026 hasta junio.</p>
       <svg id="c-ia" style="width:100%;display:block;margin-top:12px" role="img" aria-label="Constituciones por año"></svg>
     </div>
     <div class="card">
-      <span class="overline">04 · Resolución de entidades</span><h3 class="title-m" style="margin:4px 0 12px">Por qué no se fusiona por nombre</h3>
+      <span class="overline">04 · Identidad</span><h3 class="title-m" style="margin:4px 0 12px">Un nombre no es una empresa</h3>
       <div class="scroll-x" id="res"></div>
-      <p class="body-m muted" style="margin-top:12px">La búsqueda por subcadena devuelve razones sociales ajenas; la coincidencia por palabra no prueba identidad. Sin RUT, cada vínculo sería una divergencia fabricada por el propio grafo.</p>
+      <p class="body-m muted" style="margin-top:12px">«SONDA» aparece en 78 razones sociales. Sin RUT, fusionar sería inventar vínculos.</p>
     </div>
   </div>
 </section>
 
 <section class="wrap" id="tabla">
-  <div class="sec-head"><div><span class="overline">05 · Vista tabular</span><h2 class="headline-s">Todos los vínculos con su evidencia</h2></div></div>
+  <div class="sec-head"><div><span class="overline">05 · Tabla</span><h2 class="headline-s">Todos los vínculos</h2></div></div>
   <div class="card scroll-x" id="tabla-v"></div>
 </section>
 
@@ -129,12 +202,13 @@
 </main>
 
 <footer><div class="wrap grid g-3">
-  <div><p class="title-m">Doppelganger · POC v0.1</p><p class="body-m muted">Programa de dispositivos de diseño crítico sobre divergencia algorítmica en herramientas dotadas de IA en lo público del Cono Sur. Doctorado en Arquitectura, Diseño y Estudios Urbanos UC.</p></div>
-  <div><p class="title-s">Criterios</p><p class="body-m muted">Solo actores institucionales y personas en su rol público, con fuente pública enlazada. Planos de evidencia: documentado, reconstrucción, hipótesis.</p></div>
+  <div><p class="title-m">Doppelganger · POC v0.1</p><p class="body-m muted">Diseño crítico sobre divergencia algorítmica. Doctorado FADEU UC.</p></div>
+  <div><p class="title-s">Criterios</p><p class="body-m muted">Solo instituciones y cargos públicos, siempre con fuente.</p></div>
   <div><p class="title-s">Enlaces</p><p class="body-m"><a href="https://fjreboll.github.io/doppelganger-doble/">A · DOBLE</a><br><a href="https://github.com/fjreboll/doppelganger-encargo">Código y datos del sitio</a></p><p class="body-s muted" id="gen"></p></div>
 </div></footer>
 <div class="tooltip" id="tt" role="tooltip"></div>
 <script src="assets/d3.v7.min.js"></script>
 <script src="app.js"></script>
+<script src="banner.js"></script>
 </body>
 </html>
