@@ -9,10 +9,12 @@
 
   const C = { vacio: '#000000', trama: '#0d0e11', rm: '#0f1013', borde: '#26282e', nombrada: '#15305a', nombradaB: '#3987e5', red: '#1f3354',
     brillo: '#ffffff', pulso: '#aac7ff', lente: '#ff8a80', cuerpo: '#c4c6d0', poste: '#6b6e78', hub: '#3987e5', oscuro: '#000000',
-    auto1: '#f2c14e', auto2: '#e2e2e9', auto3: '#e0703f', auto4: '#1faa78', faro: '#fff4c2' };
+    auto1: '#f2c14e', auto2: '#e2e2e9', auto3: '#e0703f', auto4: '#1faa78', faro: '#fff4c2', vidrio: '#7fb2ff', rueda: '#5d6068' };
   const RGB = Object.fromEntries(Object.entries(C).map(([k, h]) => [k, [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16))]));
   // sprites sin fondo: '.' = transparente
-  const CAM = ['BBL', '.p.'];                 // cámara 3×2: cuerpo, lente, poste
+  const CAM = ['BBBB.', 'BLBBB', 'BBBB.', '.p...'];  // cámara 5×4 (ícono original, sin fondo)
+  const AUTO_H = ['.GGG.', 'CCCCF', '.o.o.'];        // auto 5×3 de perfil: vidrios, carrocería, faro, ruedas
+  const AUTO_V = ['oFo', 'CGC', 'CCC', 'o.o'];        // auto 3×4 visto desde arriba
   const HUB = ['.HHHHH.', 'HhhhhhH', 'HHHHHHH', 'HhhhhhH', 'HHHHHHH', 'HhhhhhH', 'HHHHHHH', '.H...H.'];
   const COLORES = ['auto1', 'auto2', 'auto2', 'auto3', 'auto4'];
   const porIndice = Object.fromEntries(G.comunas.map(c => [c.i, c]));
@@ -39,14 +41,14 @@
     const celdasPor = {};
     for (let y = 2; y < rows - 3; y++) for (let x = 1; x < cols - 4; x++) { const v = M[y * cols + x]; if (v && porIndice[v].piloto) (celdasPor[v] ||= []).push([x, y]); }
     camaras = [];
-    const dmin = m === 'escritorio' ? 7 : 6;
+    const dmin = m === 'escritorio' ? 10 : 8;
     Object.entries(celdasPor).forEach(([v, celdas]) => {
-      const c = porIndice[v], n = Math.max(3, Math.min(m === 'escritorio' ? 9 : 5, Math.round(celdas.length / (m === 'escritorio' ? 70 : 45))));
+      const c = porIndice[v], n = Math.max(3, Math.min(m === 'escritorio' ? 6 : 3, Math.round(celdas.length / (m === 'escritorio' ? 110 : 80))));
       let puestas = 0;
       for (let k = 0; k < celdas.length * 3 && puestas < n; k++) {
         const [x, y] = celdas[Math.floor(hash(c.cod * 131 + k) * celdas.length)];
         if (x < copyW || !libreDeHub(x, y)) continue;
-        if (M[y * cols + x + 2] !== +v || M[(y + 1) * cols + x + 1] !== +v) continue;
+        if (M[(y + 1) * cols + x + 4] !== +v || M[(y + 3) * cols + x + 1] !== +v) continue;
         if (camaras.some(q => Math.abs(q.x - x) < dmin && Math.abs(q.y - y) < dmin)) continue;
         camaras.push({ c, x, y, flash: -9 }); puestas++;
       }
@@ -54,7 +56,7 @@
 
     /* autos: recorridos en L (tramo horizontal y vertical) dentro de la RM, como calles */
     autos = [];
-    const nAutos = m === 'escritorio' ? 34 : 16;
+    const nAutos = m === 'escritorio' ? 24 : 10;
     const enRM = (x, y) => x >= 0 && y >= 0 && x < cols && y < rows && M[y * cols + x] > 0;
     for (let k = 0; autos.length < nAutos && k < 6000; k++) {
       const x0 = Math.floor(hash(k * 7 + 3) * cols), y0 = Math.floor(hash(k * 11 + 5) * rows);
@@ -76,9 +78,9 @@
       if (a.pos <= 0) { a.pos = 0; a.dir = 1; }
       const [x, y] = a.ruta[Math.floor(a.pos)];
       camaras.forEach(q => {
-        if (t - q.flash > 1.2 && Math.abs(q.x + 1 - x) <= 3 && Math.abs(q.y - y) <= 3) {
+        if (t - q.flash > 1.2 && Math.abs(q.x + 2 - x) <= 5 && Math.abs(q.y + 1 - y) <= 4) {
           q.flash = t;
-          if (pulsos.length < 40) pulsos.push({ ruta: linea(q.x + 1, q.y, hub.x + 3, hub.y + 3), t0: t });
+          if (pulsos.length < 40) pulsos.push({ ruta: linea(q.x + 2, q.y + 1, hub.x + 3, hub.y + 3), t0: t });
         }
       });
     });
@@ -102,19 +104,21 @@
       for (let q = 0; q < 2; q++) { const pt = p.ruta[cabeza - q]; if (pt) set(pt[0], pt[1], q ? RGB.nombradaB : RGB.pulso); }
     });
     // autos
+    const pintar = (f, x0, y0, espejo, col) => f.forEach((fila, dy) => [...fila].forEach((ch, dx) => {
+      if (ch === '.') return; const xx = espejo ? x0 + fila.length - 1 - dx : x0 + dx;
+      set(xx, y0 + dy, ch === 'C' ? col : ch === 'G' ? RGB.vidrio : ch === 'F' ? RGB.faro : RGB.rueda);
+    }));
     autos.forEach(a => {
       const i = Math.floor(a.pos), [x, y] = a.ruta[i], sig = a.ruta[Math.min(a.ruta.length - 1, i + 1)], ant = a.ruta[Math.max(0, i - 1)];
       const col = RGB[a.color];
-      if (sig[1] === y && ant[1] === y) {
-        const s = (sig[0] - ant[0]) * a.dir >= 0 ? 1 : -1;
-        set(x - s, y, col); set(x, y, col); set(x + s, y, RGB.faro);
-      } else { set(x, y, col); set(x, y + ((sig[1] - ant[1]) * a.dir >= 0 ? 1 : -1), RGB.faro); }
+      if (sig[1] === y && ant[1] === y) pintar(AUTO_H, x - 2, y - 2, (sig[0] - ant[0]) * a.dir < 0, col);
+      else { const f = (sig[1] - ant[1]) * a.dir >= 0 ? [...AUTO_V].reverse() : AUTO_V; pintar(f, x - 1, y - 2, false, col); }
     });
     // cámaras (sin fondo)
     camaras.forEach(q => {
       const lee = t - q.flash < .35;
       CAM.forEach((f, dy) => [...f].forEach((ch, dx) => { if (ch !== '.') set(q.x + dx, q.y + dy, ch === 'L' ? (lee ? RGB.brillo : RGB.lente) : ch === 'p' ? RGB.poste : RGB.cuerpo); }));
-      if (lee) { set(q.x + 3, q.y - 1, RGB.brillo); set(q.x + 3, q.y + 1, RGB.brillo); }
+      if (lee) { set(q.x - 1, q.y, RGB.brillo); set(q.x - 1, q.y + 2, RGB.brillo); }
     });
     // centro
     for (let y = -1; y <= HUB.length; y++) for (let x = -1; x <= HUB[0].length; x++) set(hub.x + x, hub.y + y, RGB.oscuro);
@@ -131,8 +135,8 @@
   /* íconos de la leyenda */
   root.querySelectorAll('.px-ico').forEach(c => {
     const g = c.getContext('2d'), put = (x, y, h) => { g.fillStyle = h; g.fillRect(x, y, 1, 1); };
-    if (c.dataset.ico === 'cam') { put(0, 0, C.cuerpo); put(1, 0, C.cuerpo); put(2, 0, C.lente); put(1, 1, C.poste); }
-    else { put(0, 1, C.auto1); put(1, 1, C.auto1); put(2, 1, C.faro); }
+    const f = c.dataset.ico === 'cam' ? CAM : AUTO_H;
+    f.forEach((fila, y) => [...fila].forEach((ch, x) => { if (ch !== '.') put(x, y, ({ B: C.cuerpo, L: C.lente, p: C.poste, C: C.auto1, G: C.vidrio, F: C.faro, o: C.rueda })[ch]); }));
   });
 
   /* texto dinámico */
@@ -150,7 +154,7 @@
   const tt = document.getElementById('tt');
   cv.addEventListener('pointermove', e => {
     const b = cv.getBoundingClientRect(), x = Math.floor((e.clientX - b.left) / b.width * grid.cols), y = Math.floor((e.clientY - b.top) / b.height * grid.rows);
-    const cam = camaras.find(q => x >= q.x - 1 && x <= q.x + 3 && y >= q.y - 1 && y <= q.y + 2);
+    const cam = camaras.find(q => x >= q.x - 1 && x <= q.x + 5 && y >= q.y - 1 && y <= q.y + 4);
     if (Math.abs(x - hub.x - 3) <= 5 && Math.abs(y - hub.y - 3) <= 5) {
       tt.innerHTML = `<div class="tt-sub">Centro SITIA (ilustrativo)</div><div class="body-s">Carabineros opera; la SPD administra. Sin registro público de errores.</div>`;
     } else if (cam) {
@@ -169,7 +173,7 @@
 
   function estatico() {
     pulsos = [];
-    camaras.forEach((q, i) => { if (i % 5 === 0) { q.flash = 0; pulsos.push({ ruta: linea(q.x + 1, q.y, hub.x + 3, hub.y + 3), t0: -(10 + i * 3) / 45 }); } });
+    camaras.forEach((q, i) => { if (i % 5 === 0) { q.flash = 0; pulsos.push({ ruta: linea(q.x + 2, q.y + 1, hub.x + 3, hub.y + 3), t0: -(10 + i * 3) / 45 }); } });
     dibujar(.1);
   }
   preparar(); syncBtn();
