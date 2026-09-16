@@ -16,12 +16,14 @@ Red de nodos de la prueba de concepto C del programa *Doppelganger*: la ontolog�
 | Ruta | Contenido |
 |---|---|
 | `index.html`, `app.js` | Interfaz (Material Design 3; grafo de fuerzas D3 con tooltips, filtros, búsqueda, panel de detalle y vista tabular) |
-| `banner.js`, `assets/banner_grid_sitia.json` | Banner pixel art: RM rasterizada con las 12 comunas que SITIA nombra como colaboradoras, cámaras (ubicación ilustrativa) enviando lecturas a un centro, cifras declaradas y las ausencias del grafo |
+| `banner.js`, `assets/banner_grid_sitia.json` | Banner pixel art: RM rasterizada con las 12 comunas que SITIA nombra como colaboradoras, autos que circulan por la red vial de OpenStreetMap y cámaras (ubicación ilustrativa) junto a avenidas que envían lecturas a un centro, cifras declaradas y las ausencias del grafo |
 | `data.json` | Objetos, vínculos, fuentes y autorregistro exportados desde la base común |
 | `assets/` | Hoja de estilo M3, D3 v7 y tipografías auto-alojadas (incl. Pixelify Sans y VT323, SIL OFL) |
 
 El código que genera `data.json` vive en [`doppelganger-doble/pipeline`](https://github.com/fjreboll/doppelganger-doble/tree/main/pipeline) (`04_grafo_encargo.py`, semilla `data/seeds/encargo_sitia.json`, adaptadores para Mercado Público e InfoLobby aún no ejecutados).
 
 ## Fuentes
+
+Vías del banner: OpenStreetMap (© colaboradores de OpenStreetMap, licencia ODbL), consulta Overpass del 2026-09-16, rasterizada con `pipeline/src/11_calles_osm.js` y `12_integrar_calles.py` del repositorio DOBLE.
 
 sitia.gob.cl (portada, preguntas frecuentes, nota Maule 2025-11-07) · nota corporativa SONDA (2024-12-13) · Registro de Empresas y Sociedades. Página de gobernanza SITIA (403) y ficha del Repositorio de Algoritmos Públicos GobLab UAI (no legible) registradas como reconstrucción.

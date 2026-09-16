@@ -9,7 +9,8 @@
 
   const C = { vacio: '#000000', trama: '#0d0e11', rm: '#0f1013', borde: '#26282e', nombrada: '#15305a', nombradaB: '#3987e5', red: '#1f3354',
     brillo: '#ffffff', pulso: '#aac7ff', lente: '#ff8a80', cuerpo: '#c4c6d0', poste: '#6b6e78', hub: '#3987e5', oscuro: '#000000',
-    auto1: '#f2c14e', auto2: '#e2e2e9', auto3: '#e0703f', auto4: '#1faa78', faro: '#fff4c2', vidrio: '#7fb2ff', rueda: '#5d6068' };
+    auto1: '#f2c14e', auto2: '#e2e2e9', auto3: '#e0703f', auto4: '#1faa78', faro: '#fff4c2', vidrio: '#7fb2ff', rueda: '#5d6068',
+    v1: '#4a4e58', v2: '#363940', v3: '#25272d', vn1: '#4f73ab', vn2: '#34568c', vn3: '#223f6c' };
   const RGB = Object.fromEntries(Object.entries(C).map(([k, h]) => [k, [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16))]));
   // sprites sin fondo: '.' = transparente
   const CAM = ['BBBB.', 'BLBBB', 'BBBB.', '.p...'];  // cámara 5×4 (ícono original, sin fondo)
@@ -19,8 +20,10 @@
   const COLORES = ['auto1', 'auto2', 'auto2', 'auto3', 'auto4'];
   const porIndice = Object.fromEntries(G.comunas.map(c => [c.i, c]));
   const aus = D.nodos.filter(n => n.familia === 'ausencia');
-  let modo, grid, M, img, camaras = [], autos = [], pulsos = [], hub, t0 = performance.now(), tPrev = t0, jugando = !reduce;
+  let modo, grid, M, V, img, camaras = [], autos = [], pulsos = [], hub, t0 = performance.now(), tPrev = t0, jugando = !reduce;
 
+  const DIRS = [[1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1]];
+  let via_ = () => false, paso = 0;
   const hash = i => { let x = (i + 1) * 2654435761 >>> 0; x ^= x >>> 16; x = Math.imul(x, 2246822507) >>> 0; x ^= x >>> 13; return (x >>> 0) / 4294967296; };
   const linea = (x0, y0, x1, y1) => { const p = []; let dx = Math.abs(x1 - x0), sx = x0 < x1 ? 1 : -1, dy = -Math.abs(y1 - y0), sy = y0 < y1 ? 1 : -1, e = dx + dy;
     for (;;) { p.push([x0, y0]); if (x0 === x1 && y0 === y1) break; const e2 = 2 * e; if (e2 >= dy) { e += dy; x0 += sx; } if (e2 <= dx) { e += dx; y0 += sy; } } return p; };
@@ -31,54 +34,76 @@
     const { cols, rows } = grid;
     M = new Uint8Array(cols * rows);
     for (let k = 0; k < M.length; k++) M[k] = G.alfabeto.indexOf(grid.celdas[k]);
+    // calles OSM rasterizadas: 0 nada, 1 autopista, 2 primaria, 3 secundaria, 4 terciaria
+    V = new Uint8Array(cols * rows);
+    grid.calles.split('|').forEach((fila, y) => { let x = 0; for (const [, c, n] of fila.matchAll(/([A-E])([0-9a-z]*)/g)) { const k = 'ABCDE'.indexOf(c), len = n ? parseInt(n, 36) : 1; if (k) V.fill(k, y * cols + x, y * cols + x + len); x += len; } });
     cv.width = cols; cv.height = rows; img = ctx.createImageData(cols, rows);
     root.style.setProperty('--aspect', `${cols} / ${rows}`);
     hub = m === 'escritorio' ? { x: Math.round(cols * .9), y: Math.round(rows * .70) } : { x: Math.round(cols * .62), y: Math.round(rows * .78) };
     const libreDeHub = (x, y) => Math.abs(x - hub.x - 3) > 7 || Math.abs(y - hub.y - 3) > 7;
     const copyW = m === 'escritorio' ? cols * .36 : 0;               // sin sprites bajo el panel de texto
 
-    /* cámaras: varias por comuna nombrada, con distancia mínima */
+    /* cámaras: junto a avenidas de las comunas nombradas (el lector mira la vía), con distancia mínima */
+    const via = (x, y) => x >= copyW && y >= 0 && x < cols && y < rows && V[y * cols + x] > 0 && V[y * cols + x] <= 3;
     const celdasPor = {};
-    for (let y = 2; y < rows - 3; y++) for (let x = 1; x < cols - 4; x++) { const v = M[y * cols + x]; if (v && porIndice[v].piloto) (celdasPor[v] ||= []).push([x, y]); }
+    for (let y = 5; y < rows - 1; y++) for (let x = 2; x < cols - 4; x++) {
+      const v = M[y * cols + x];
+      if (v && porIndice[v].piloto && via(x, y) && !via(x, y - 1) && !via(x + 1, y - 2)) (celdasPor[v] ||= []).push([x, y]);
+    }
     camaras = [];
     const dmin = m === 'escritorio' ? 10 : 8;
     Object.entries(celdasPor).forEach(([v, celdas]) => {
-      const c = porIndice[v], n = Math.max(3, Math.min(m === 'escritorio' ? 6 : 3, Math.round(celdas.length / (m === 'escritorio' ? 110 : 80))));
+      const c = porIndice[v], n = Math.max(2, Math.min(m === 'escritorio' ? 6 : 3, Math.round(celdas.length / (m === 'escritorio' ? 25 : 18))));
       let puestas = 0;
       for (let k = 0; k < celdas.length * 3 && puestas < n; k++) {
-        const [x, y] = celdas[Math.floor(hash(c.cod * 131 + k) * celdas.length)];
+        const [rx, ry] = celdas[Math.floor(hash(c.cod * 131 + k) * celdas.length)];
+        const x = rx - 1, y = ry - 4;                                   // el poste queda justo sobre la vía
         if (x < copyW || !libreDeHub(x, y)) continue;
-        if (M[(y + 1) * cols + x + 4] !== +v || M[(y + 3) * cols + x + 1] !== +v) continue;
         if (camaras.some(q => Math.abs(q.x - x) < dmin && Math.abs(q.y - y) < dmin)) continue;
         camaras.push({ c, x, y, flash: -9 }); puestas++;
       }
     });
 
-    /* autos: recorridos en L (tramo horizontal y vertical) dentro de la RM, como calles */
+    /* autos: recorren la red vial OSM (autopistas, primarias y secundarias) celda a celda */
     autos = [];
-    const nAutos = m === 'escritorio' ? 24 : 10;
-    const enRM = (x, y) => x >= 0 && y >= 0 && x < cols && y < rows && M[y * cols + x] > 0;
-    for (let k = 0; autos.length < nAutos && k < 6000; k++) {
-      const x0 = Math.floor(hash(k * 7 + 3) * cols), y0 = Math.floor(hash(k * 11 + 5) * rows);
-      const x1 = Math.floor(hash(k * 13 + 7) * cols), y1 = Math.floor(hash(k * 17 + 9) * rows);
-      if (Math.abs(x1 - x0) < cols * .12 && Math.abs(y1 - y0) < rows * .12) continue;
-      const tramo = [...linea(x0, y0, x1, y0), ...linea(x1, y0, x1, y1).slice(1)];
-      if (tramo.length < 20 || tramo.some(([x]) => x < copyW)) continue;
-      if (tramo.filter(([x, y]) => enRM(x, y)).length / tramo.length < .97) continue;
-      autos.push({ ruta: tramo, pos: hash(k * 19) * tramo.length, vel: (m === 'escritorio' ? 9 : 6) + hash(k * 23) * 8, dir: 1, color: COLORES[autos.length % COLORES.length] });
+    const nAutos = m === 'escritorio' ? 26 : 12;
+    const inicios = [];
+    for (let y = 1; y < rows - 1; y++) for (let x = Math.ceil(copyW); x < cols - 1; x++) if (via(x, y) && M[y * cols + x]) inicios.push([x, y]);
+    for (let k = 0; autos.length < nAutos && k < nAutos * 20; k++) {
+      const [x, y] = inicios[Math.floor(hash(k * 7 + 3) * inicios.length)];
+      if (autos.some(a => Math.abs(a.x - x) < 6 && Math.abs(a.y - y) < 4)) continue;
+      const vec = DIRS.filter(([dx, dy]) => via(x + dx, y + dy));
+      if (!vec.length) continue;
+      const [dx, dy] = vec[Math.floor(hash(k * 11) * vec.length)];
+      autos.push({ x, y, dx, dy, acc: hash(k * 13), vel: 5 + hash(k * 23) * 5, color: COLORES[autos.length % COLORES.length], semilla: k });
     }
+    via_ = via;
     pulsos = [];
     const hl = $('.px-hub'); hl.style.left = (hub.x + 3.5) / cols * 100 + '%'; hl.style.top = (hub.y + 8) / rows * 100 + '%';
   }
 
+  function mover(a) {
+    // sigue la vía: prefiere seguir derecho, luego giros suaves (45°), luego 90°; nunca retrocede salvo calle sin salida
+    const i = DIRS.findIndex(([dx, dy]) => dx === a.dx && dy === a.dy);
+    const opciones = [[0, 8], [1, 3], [-1, 3], [2, 1], [-2, 1]].map(([d, w]) => [DIRS[(i + d + 8) % 8], w]).filter(([[dx, dy]]) => via_(a.x + dx, a.y + dy));
+    let elegido;
+    if (!opciones.length) elegido = [-a.dx, -a.dy];
+    else {
+      const total = opciones.reduce((s, o) => s + o[1], 0); let r = hash(a.semilla * 977 + (paso++)) * total;
+      elegido = opciones.find(o => (r -= o[1]) < 0)[0];
+    }
+    [a.dx, a.dy] = elegido;
+    if (via_(a.x + a.dx, a.y + a.dy)) { a.x += a.dx; a.y += a.dy; }
+    const clase = V[a.y * grid.cols + a.x];
+    a.ritmo = clase === 1 ? 1.6 : clase === 2 ? 1.15 : 1;              // más rápido en autopista
+  }
+
   function avanzar(dt, t) {
     autos.forEach(a => {
-      a.pos += a.vel * dt * a.dir;
-      if (a.pos >= a.ruta.length - 1) { a.pos = a.ruta.length - 1; a.dir = -1; }
-      if (a.pos <= 0) { a.pos = 0; a.dir = 1; }
-      const [x, y] = a.ruta[Math.floor(a.pos)];
+      a.acc += a.vel * (a.ritmo || 1) * dt;
+      while (a.acc >= 1) { a.acc -= 1; mover(a); }
       camaras.forEach(q => {
-        if (t - q.flash > 1.2 && Math.abs(q.x + 2 - x) <= 5 && Math.abs(q.y + 1 - y) <= 4) {
+        if (t - q.flash > 1.2 && Math.abs(q.x + 1 - a.x) <= 3 && Math.abs(q.y + 4 - a.y) <= 2) {
           q.flash = t;
           if (pulsos.length < 40) pulsos.push({ ruta: linea(q.x + 2, q.y + 1, hub.x + 3, hub.y + 3), t0: t });
         }
@@ -92,10 +117,13 @@
     const set = (x, y, rgb) => { if (x < 0 || y < 0 || x >= cols || y >= rows) return; const o = (y * cols + x) * 4; px[o] = rgb[0]; px[o + 1] = rgb[1]; px[o + 2] = rgb[2]; px[o + 3] = 255; };
     for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
       const v = M[y * cols + x];
-      if (!v) { set(x, y, (x % 6 === 0 && y % 6 === 0) ? RGB.trama : RGB.vacio); continue; }
+      if (!v) { set(x, y, V[y * cols + x] && V[y * cols + x] < 3 ? RGB.v3 : (x % 6 === 0 && y % 6 === 0) ? RGB.trama : RGB.vacio); continue; }
       const vec = (dx, dy) => { const xx = x + dx, yy = y + dy; return xx < 0 || yy < 0 || xx >= cols || yy >= rows ? v : M[yy * cols + xx]; };
       const borde = vec(1, 0) !== v || vec(-1, 0) !== v || vec(0, 1) !== v || vec(0, -1) !== v, nom = porIndice[v].piloto;
-      set(x, y, nom ? (borde ? RGB.nombradaB : ((x + y) % 2 ? RGB.nombrada : RGB.red)) : (borde ? RGB.borde : RGB.rm));
+      const cv_ = V[y * cols + x];
+      if (borde) set(x, y, nom ? RGB.nombradaB : RGB.borde);
+      else if (cv_ && cv_ < 4) set(x, y, nom ? RGB['vn' + cv_] : RGB['v' + cv_]);
+      else set(x, y, nom ? ((x + y) % 2 ? RGB.nombrada : RGB.red) : RGB.rm);
     }
     // lecturas viajando al centro
     pulsos.forEach(p => {
@@ -109,10 +137,9 @@
       set(xx, y0 + dy, ch === 'C' ? col : ch === 'G' ? RGB.vidrio : ch === 'F' ? RGB.faro : RGB.rueda);
     }));
     autos.forEach(a => {
-      const i = Math.floor(a.pos), [x, y] = a.ruta[i], sig = a.ruta[Math.min(a.ruta.length - 1, i + 1)], ant = a.ruta[Math.max(0, i - 1)];
       const col = RGB[a.color];
-      if (sig[1] === y && ant[1] === y) pintar(AUTO_H, x - 2, y - 2, (sig[0] - ant[0]) * a.dir < 0, col);
-      else { const f = (sig[1] - ant[1]) * a.dir >= 0 ? [...AUTO_V].reverse() : AUTO_V; pintar(f, x - 1, y - 2, false, col); }
+      if (Math.abs(a.dx) >= Math.abs(a.dy) && a.dx !== 0) pintar(AUTO_H, a.x - 2, a.y - 1, a.dx < 0, col);
+      else pintar(a.dy > 0 ? [...AUTO_V].reverse() : AUTO_V, a.x - 1, a.y - 2, false, col);
     });
     // cámaras (sin fondo)
     camaras.forEach(q => {
