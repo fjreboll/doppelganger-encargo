@@ -24,11 +24,8 @@
   let visibles = new Set(Object.keys(FAM)), seleccion = null, query = '';
 
   /* tema y chrome */
-  try { const t = localStorage.getItem('encargo-theme'); if (t) root.dataset.theme = t; } catch (e) {}
-  const isDark = () => (root.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')) === 'dark';
-  const setIcon = () => $('#theme span').textContent = isDark() ? 'light_mode' : 'dark_mode';
-  setIcon();
-  $('#theme').onclick = () => { root.dataset.theme = isDark() ? 'light' : 'dark'; try { localStorage.setItem('encargo-theme', root.dataset.theme); } catch (e) {} setIcon(); restyle(); drawIA(); };
+  root.dataset.theme = 'dark';
+  const isDark = () => true;
   addEventListener('scroll', () => $('#appbar').classList.toggle('scrolled', scrollY > 4), { passive: true });
   const tt = $('#tt');
   const showTT = (e, html) => { tt.innerHTML = html; tt.classList.add('on'); const r = tt.getBoundingClientRect(); let x = e.clientX + 16, y = e.clientY + 16; if (x + r.width > innerWidth - 8) x = e.clientX - r.width - 16; if (y + r.height > innerHeight - 8) y = e.clientY - r.height - 16; tt.style.left = Math.max(8, x) + 'px'; tt.style.top = Math.max(8, y) + 'px'; };
@@ -253,5 +250,4 @@
   $('#fuentes').innerHTML = `<table class="data"><thead><tr><th>Fuente</th><th>Publicación</th><th>Acceso</th><th>Plano</th><th>Nota</th></tr></thead><tbody>${D.fuentes.map(f => `<tr><td>${f.url ? `<a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.nombre)}</a>` : esc(f.nombre)}<div class="body-s muted">${esc(f.institucion)}</div></td><td>${esc(f.fecha_publicacion || f.anio_referencia)}</td><td class="body-s" style="font-family:var(--mono)">${esc(f.via_acceso)}</td><td><span class="badge ${f.plano_evidencia === 'documentado' ? 'pri' : 'err'}">${esc(f.plano_evidencia)}</span></td><td class="body-s muted">${esc(f.nota_homologacion)}</td></tr>`).join('')}</tbody></table>`;
 
   let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { fit(0); drawIA(); schedule(); }, 150); });
-  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { setIcon(); restyle(); drawIA(); });
 })();

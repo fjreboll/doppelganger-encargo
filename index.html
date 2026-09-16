@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Grafo del encargo · SITIA</title>
+<title>Doble · Grafo del encargo SITIA</title>
 <meta name="description" content="Quién encarga, provee y opera SITIA, con fuente en cada vínculo y lo que no se documenta.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23415f91'/><g stroke='white' stroke-width='2'><line x1='10' y1='10' x2='22' y2='16'/><line x1='10' y1='22' x2='22' y2='16'/></g><circle cx='10' cy='10' r='3.5' fill='white'/><circle cx='10' cy='22' r='3.5' fill='white'/><circle cx='22' cy='16' r='4.5' fill='none' stroke='%23ffb4ab' stroke-width='2' stroke-dasharray='2.5 2'/></svg>">
 <link rel="stylesheet" href="assets/m3.css">
@@ -44,8 +44,8 @@
 .aus-card{border:1px dashed var(--net-aus)!important}
 .aus-card .material-symbols-outlined{color:var(--md-error)}
 :root{--net-pub:#256abf;--net-priv:#c9501e;--net-ase:#12875d;--net-ctx:#5d6068;--net-aus:#b3261e;--net-edge:#74777f;--net-label:#191c20;--net-halo:#ffffff}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--net-pub:#3987e5;--net-priv:#e0703f;--net-ase:#1faa78;--net-ctx:#a9abb4;--net-aus:#ff8a80;--net-edge:#8e9099;--net-label:#e2e2e9;--net-halo:#0c0e13}}
-:root[data-theme="dark"]{--net-pub:#3987e5;--net-priv:#e0703f;--net-ase:#1faa78;--net-ctx:#a9abb4;--net-aus:#ff8a80;--net-edge:#8e9099;--net-label:#e2e2e9;--net-halo:#0c0e13}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--net-pub:#3987e5;--net-priv:#e0703f;--net-ase:#1faa78;--net-ctx:#a9abb4;--net-aus:#ff8a80;--net-edge:#8e9099;--net-label:#e2e2e9;--net-halo:#000}}
+:root[data-theme="dark"]{--net-pub:#3987e5;--net-priv:#e0703f;--net-ase:#1faa78;--net-ctx:#a9abb4;--net-aus:#ff8a80;--net-edge:#8e9099;--net-label:#e2e2e9;--net-halo:#000}
 .nlabel{fill:var(--net-label);paint-order:stroke;stroke:var(--net-halo);stroke-linejoin:round;letter-spacing:.2px}
 .node{cursor:pointer}
 .node:focus,.node:focus-visible{outline:none}.node:focus-visible .shape{stroke:var(--md-primary);stroke-width:3px}
@@ -59,26 +59,26 @@
 @font-face{font-family:"VT323";font-style:normal;font-display:swap;font-weight:400;src:url(assets/fonts/vt323-latin-400-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 @font-face{font-family:"VT323";font-style:normal;font-display:swap;font-weight:400;src:url(assets/fonts/vt323-latin-ext-400-normal.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+1E00-1E9F,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
 .px-wrap{padding-top:16px}
-.px-banner{--px:"Pixelify Sans",var(--mono);--vt:"VT323",var(--mono);position:relative;border-radius:var(--shape-l);overflow:hidden;background:#0c0e13;color:#e2e2e9;box-shadow:var(--md-elev-1);font-family:var(--vt);font-size:18px;line-height:20px;letter-spacing:.2px}
+.px-banner{--px:"Pixelify Sans",var(--mono);--vt:"VT323",var(--mono);position:relative;border-radius:var(--shape-l);overflow:hidden;background:#000;color:#e2e2e9;box-shadow:var(--md-elev-1);font-family:var(--vt);font-size:18px;line-height:20px;letter-spacing:.2px}
 .px-stage{position:relative;aspect-ratio:var(--aspect,300/106)}
 .px-stage canvas{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges;display:block;cursor:crosshair}
 .px-labels{position:absolute;inset:0;pointer-events:none}
-.px-label{position:absolute;display:flex;flex-direction:column;gap:0;padding:2px 8px 3px;background:rgba(12,14,19,.88);font-size:20px;line-height:19px;white-space:nowrap;letter-spacing:.3px;box-shadow:0 0 0 2px #0c0e13}
+.px-label{position:absolute;display:flex;flex-direction:column;gap:0;padding:2px 8px 3px;background:rgba(0,0,0,.88);font-size:20px;line-height:19px;white-space:nowrap;letter-spacing:.3px;box-shadow:0 0 0 2px #000}
 .px-label .n{color:#fff}.px-label .v{color:#c4c6d0;font-size:17px;line-height:16px}
 .px-label.end{transform:translate(calc(-100% - 22px),-50%);border-right:3px solid #e2e2e9;text-align:right}
 .px-label.start{transform:translate(22px,-50%);border-left:3px solid #e2e2e9}
-.px-copy{position:absolute;left:0;top:0;bottom:0;width:44%;padding:24px 28px;display:flex;flex-direction:column;gap:10px;background:linear-gradient(90deg,#0c0e13 0,#0c0e13 62%,rgba(12,14,19,0))}
+.px-copy{position:absolute;left:0;top:0;bottom:0;width:44%;padding:24px 28px;display:flex;flex-direction:column;gap:10px;background:linear-gradient(90deg,#000 0,#000 62%,rgba(0,0,0,0))}
 .px-kicker{font-size:17px;line-height:18px;letter-spacing:1.5px;color:#aac7ff;text-transform:uppercase}
 .px-title{font-family:var(--px);font-weight:600;font-size:64px;line-height:56px;letter-spacing:2px;color:#fff;margin:0;text-shadow:4px 4px 0 #b3261e}
 .px-sub{font-size:20px;line-height:21px;color:#c4c6d0;max-width:30ch}
 .px-counter{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;font-size:20px;color:#c4c6d0}
-.px-mes{padding:0 8px;background:#e2e2e9;color:#0c0e13;letter-spacing:1px}
+.px-mes{padding:0 8px;background:#e2e2e9;color:#000;letter-spacing:1px}
 .px-total{font-family:var(--px);font-size:28px;line-height:28px;color:#fff;font-weight:600}
 .px-bar{height:8px;background:#1d2024;box-shadow:inset 0 0 0 2px #2e3139;max-width:280px}.px-bar i{display:block;height:100%;background:#ff8a80;transition:width .2s steps(4)}
 .px-legend{list-style:none;margin:2px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:2px 14px;font-size:18px;line-height:19px;color:#c4c6d0}
 .px-legend .px-sprites{display:flex;align-items:center;gap:6px}.px-ico{width:15px;height:auto;image-rendering:pixelated;margin-left:4px}.px-note{color:#8e9099}
-.px-legend i{display:inline-block;width:10px;height:10px;margin-right:6px;vertical-align:-1px;box-shadow:0 0 0 1px #0c0e13}
-.px-ctrl{position:absolute;right:12px;bottom:10px;display:flex;align-items:center;gap:8px;padding:4px 10px 4px 4px;background:rgba(12,14,19,.86);border-radius:var(--shape-full)}
+.px-legend i{display:inline-block;width:10px;height:10px;margin-right:6px;vertical-align:-1px;box-shadow:0 0 0 1px #000}
+.px-ctrl{position:absolute;right:12px;bottom:10px;display:flex;align-items:center;gap:8px;padding:4px 10px 4px 4px;background:rgba(0,0,0,.86);border-radius:var(--shape-full)}
 .px-ctrl .icon-btn{color:#e2e2e9}.px-ctrl .icon-btn:hover{background:rgba(226,226,233,.12)}
 .px-range{width:140px;accent-color:#ff8a80}
 .px-src{position:absolute;left:28px;bottom:10px;font-size:15px;line-height:15px;color:#8e9099;letter-spacing:.3px;max-width:40%}
@@ -92,7 +92,7 @@
 }
 @media (min-width:640px) and (max-width:1000px){.px-copy{width:50%;padding:18px}.px-title{font-size:48px;line-height:44px}.px-sub{display:none}.px-label{font-size:18px}.px-label .v{display:none}}
 
-.px-hub{position:absolute;transform:translate(-50%,4px);font-size:18px;line-height:16px;padding:1px 6px 2px;background:rgba(12,14,19,.88);color:#aac7ff;letter-spacing:1px;white-space:nowrap;pointer-events:none}
+.px-hub{position:absolute;transform:translate(-50%,4px);font-size:18px;line-height:16px;padding:1px 6px 2px;background:rgba(0,0,0,.88);color:#aac7ff;letter-spacing:1px;white-space:nowrap;pointer-events:none}
 .px-stats{display:grid;grid-template-columns:repeat(3,auto);gap:2px 16px;justify-content:start}
 .px-stats b{display:block;font-family:var(--vt);font-weight:400;font-size:34px;line-height:28px;color:#fff}.px-stats span{font-size:17px;color:#c4c6d0}
 .px-aus-t{font-size:18px;color:#ff8a80;margin-top:2px}
@@ -103,14 +103,20 @@
 
 .notice{display:flex;gap:12px;padding:12px 16px;border-radius:var(--shape-m);background:var(--md-tertiary-container);color:var(--md-on-tertiary-container);margin-top:16px}
 @media (max-width:600px){.hide-s{display:none}.stat .v{font-size:36px;line-height:44px}.legend-card{position:static;max-width:none;border-radius:0}}
+
+/* fondos negros (tema fijo) */
+:root,:root[data-theme="dark"]{color-scheme:dark;--md-surface:#000;--md-surface-dim:#000;--md-surface-bright:#262626;
+  --md-surface-container-lowest:#000;--md-surface-container-low:#0b0b0c;--md-surface-container:#131314;
+  --md-surface-container-high:#1c1c1e;--md-surface-container-highest:#262628}
+body{background:#000}
+.card.elevated,.card{border:1px solid #1f1f22}
 </style>
 </head>
 <body>
 <header class="top-app-bar" id="appbar">
   <span class="material-symbols-outlined" style="color:var(--md-primary);font-size:24px;margin:0 8px 0 4px">hub</span>
-  <div class="title title-l">Grafo del encargo · SITIA</div>
-  <a class="btn text" href="https://fjreboll.github.io/doppelganger-doble/" title="Ir al dashboard DOBLE"><span class="material-symbols-outlined">difference</span><span class="hide-s">DOBLE A</span></a>
-  <button class="icon-btn" id="theme" aria-label="Cambiar tema"><span class="material-symbols-outlined">dark_mode</span></button>
+  <div class="title title-l">Doble</div>
+  <a class="btn text" href="https://fjreboll.github.io/doppelganger-doble/" title="Ir al registro de divergencias"><span class="material-symbols-outlined">difference</span><span class="hide-s">Registro</span></a>
   <a class="icon-btn" href="https://github.com/fjreboll/doppelganger-encargo" aria-label="Código en GitHub"><span class="material-symbols-outlined">code</span></a>
 </header>
 
@@ -123,14 +129,14 @@
       <div class="px-ctrl"><button class="icon-btn px-play" aria-label="Pausar animación"><span class="material-symbols-outlined">pause</span></button></div>
     </div>
     <div class="px-copy">
-      <p class="px-kicker">Doppelganger · prueba C</p>
-      <h2 class="px-title" id="px-title">SITIA</h2>
+      <p class="px-kicker">Prueba C · grafo del encargo SITIA</p>
+      <h2 class="px-title" id="px-title">DOBLE</h2>
       <p class="px-sub">Quién mira, con qué y qué no se documenta.</p>
       <div class="px-stats"><div><b class="px-camaras">—</b><span>cámaras</span></div><div><b class="px-lectores">—</b><span>lectores de patentes</span></div><div><b class="px-comunas">—</b><span>comunas RM</span></div></div>
       <ul class="px-legend">
         <li><i style="background:#3987e5"></i>Nombrada (12)</li>
         <li><i style="background:#2e3139"></i>Sin nombre en la fuente</li>
-        <li><i style="background:#b9bcc6;box-shadow:inset -3px 0 0 #ff8a80"></i>Cámara (ubicación ilustrativa)</li>
+        <li class="px-sprites"><canvas class="px-ico" data-ico="cam" width="3" height="2"></canvas>Cámara <canvas class="px-ico" data-ico="auto" width="3" height="2"></canvas>Auto leído <span class="px-note">(ilustrativo)</span></li>
       </ul>
       <p class="px-aus-t"><span class="px-aus-n">6</span> cosas sin documentar</p>
       <ul class="px-aus"></ul>
