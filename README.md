@@ -15,6 +15,10 @@ Red de nodos de la prueba de concepto C del programa *Doppelganger*: la ontolog�
 - Revisión 2026-09-19 (segunda vuelta): el portal de integración LPR (`integracion.sitia.gob.cl`) documenta el recorrido completo del dato y se incorporó como fuente. Dos hallazgos quedan en el autorregistro: el menú «Documentación Técnica» de sitia.gob.cl enlaza a la portada del propio sitio, y la portada del portal técnico ofrece «análisis predictivo» para «anticipar actividades delictivas», capacidad ausente de la FAQ pública y de la gobernanza.
 - Los errores que el programa tipifica (401, 400, 404, 409, 429, TLS) son todos de la integración: ninguno nombra una lectura equivocada sobre una persona. El alcance de esa evidencia queda declarado en el sitio: la documentación examinada regula la integración de terceros y no el procedimiento policial, de modo que lo que consta es la ausencia en el documento, no la ausencia de un procedimiento interno.
 
+## Solicitud de transparencia
+
+Las ausencias que el grafo documenta tienen una vía de cierre: una solicitud de acceso a la información pública (Ley 20.285) con diez peticiones a la Subsecretaría de Prevención del Delito y cuatro a Carabineros de Chile, redactadas el 2026-09-19. Cada petición pide documentos, no opiniones, y cubre el protocolo de falsos positivos, el umbral de decisión, las bases cotejadas, los plazos de retención, el registro interno de divergencias, la evaluación de impacto algorítmico, el análisis predictivo, los instrumentos de adhesión, el proceso de contratación y las actas del comité de ética. El estado del trámite se publica en la entrada `C·transparencia` del autorregistro.
+
 ## Estructura
 
 | Ruta | Contenido |

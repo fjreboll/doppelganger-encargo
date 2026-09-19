@@ -2234,6 +2234,15 @@
    "correccion": "Solicitar por Ley 20.285 el procedimiento de despacho de alertas y el plazo de retención de lecturas",
    "deteccion": "Lectura directa de integracion.sitia.gob.cl el 19-09-2026",
    "metrica": "estaciones: 7 · campos del evento: 20 · errores tipificados: 6 · errores referidos a la lectura: 0"
+  },
+  {
+   "componente": "C·transparencia",
+   "que_registro": "Solicitud de acceso a la información pública (Ley 20.285) sobre lo que el grafo registra como ausente: protocolo de falsos positivos y validación humana, umbral de decisión, bases cotejadas y su actualización, plazos de retención, registro interno de divergencias, evaluación de impacto algorítmico, análisis predictivo, instrumentos de adhesión, proceso de contratación y actas del Comité de Ética",
+   "efecto": "Dos escritos redactados el 2026-09-19: el principal a la Subsecretaría de Prevención del Delito y uno derivado a Carabineros de Chile por la parte operativa de las alertas",
+   "inexactitud": "Estado del trámite: redactado, pendiente de ingreso. Mientras no haya folio, las cinco ausencias siguen siendo ausencias documentales y no acreditan inexistencia de los procedimientos en el ámbito interno",
+   "correccion": "Ingresar ambos escritos el mismo día y anotar aquí folio, fecha y respuesta; si hay silencio o denegación, amparo ante el Consejo para la Transparencia dentro de 15 días hábiles",
+   "deteccion": "Revisión de la documentación pública y técnica del programa el 2026-09-19",
+   "metrica": "10 peticiones en el escrito principal · 4 en el derivado · 8 ausencias o contrastes cubiertos · folio: pendiente"
   }
  ],
  "ia_res": [
