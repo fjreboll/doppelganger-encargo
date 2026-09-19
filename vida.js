@@ -66,8 +66,10 @@
   let cols = 0, rows = 0, xs = [];
   const medir = () => {
     const r = cv.getBoundingClientRect(); if (!r.width) return;
-    cols = Math.max(40, Math.round(r.width / CEL)); rows = Math.max(16, Math.round(r.height / CEL));
+    cols = Math.max(40, Math.floor(r.width / CEL)); rows = Math.max(16, Math.floor(r.height / CEL));
     cv.width = cols; cv.height = rows;
+    cv.style.width = cols * CEL + 'px';          // escala entera: cada píxel mide lo mismo
+    cv.style.height = rows * CEL + 'px';
     xs = V.estaciones.map((e, i) => Math.round((cols - 14) * i / (V.estaciones.length - 1)) + 7);
     dibujar(cuadro);
   };
