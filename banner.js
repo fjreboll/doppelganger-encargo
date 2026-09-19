@@ -6,6 +6,7 @@
   const $ = s => root.querySelector(s);
   const cv = $('canvas'), ctx = cv.getContext('2d');
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let ox = 0, oy = 0, escala = 1;
 
   const C = { vacio: '#000000', trama: '#0d0e11', rm: '#0f1013', borde: '#26282e', nombrada: '#15305a', nombradaB: '#3987e5', red: '#1f3354',
     brillo: '#ffffff', pulso: '#aac7ff', lente: '#ff8a80', cuerpo: '#c4c6d0', poste: '#6b6e78', hub: '#3987e5', oscuro: '#000000',
@@ -51,9 +52,9 @@
       if (v && porIndice[v].piloto && via(x, y) && !via(x, y - 1) && !via(x + 1, y - 2)) (celdasPor[v] ||= []).push([x, y]);
     }
     camaras = [];
-    const dmin = m === 'escritorio' ? 10 : 8;
+    const dmin = m === 'escritorio' ? 16 : 9;
     Object.entries(celdasPor).forEach(([v, celdas]) => {
-      const c = porIndice[v], n = Math.max(2, Math.min(m === 'escritorio' ? 6 : 3, Math.round(celdas.length / (m === 'escritorio' ? 25 : 18))));
+      const c = porIndice[v], n = Math.max(2, Math.min(m === 'escritorio' ? 5 : 3, Math.round(celdas.length / (m === 'escritorio' ? 120 : 45))));
       let puestas = 0;
       for (let k = 0; k < celdas.length * 3 && puestas < n; k++) {
         const [rx, ry] = celdas[Math.floor(hash(c.cod * 131 + k) * celdas.length)];
@@ -66,12 +67,12 @@
 
     /* autos: recorren la red vial OSM (autopistas, primarias y secundarias) celda a celda */
     autos = [];
-    const nAutos = m === 'escritorio' ? 26 : 12;
+    const nAutos = m === 'escritorio' ? 14 : 6;
     const inicios = [];
     for (let y = 1; y < rows - 1; y++) for (let x = Math.ceil(copyW); x < cols - 1; x++) if (via(x, y) && M[y * cols + x]) inicios.push([x, y]);
     for (let k = 0; autos.length < nAutos && k < nAutos * 20; k++) {
       const [x, y] = inicios[Math.floor(hash(k * 7 + 3) * inicios.length)];
-      if (autos.some(a => Math.abs(a.x - x) < 6 && Math.abs(a.y - y) < 4)) continue;
+      if (autos.some(a => Math.abs(a.x - x) < 14 && Math.abs(a.y - y) < 10)) continue;
       const vec = DIRS.filter(([dx, dy]) => via(x + dx, y + dy));
       if (!vec.length) continue;
       const [dx, dy] = vec[Math.floor(hash(k * 11) * vec.length)];
@@ -180,9 +181,19 @@
   const syncBtn = () => { btn.querySelector('span').textContent = jugando ? 'pause' : 'play_arrow'; btn.setAttribute('aria-label', jugando ? 'Pausar animación' : 'Reproducir animación'); };
   btn.onclick = () => { jugando = !jugando; syncBtn(); };
 
+  // el canvas usa object-fit: contain; la capa de etiquetas se ajusta al rectángulo realmente dibujado
+  const capa = root.querySelector('.px-labels');
+  const encuadrar = () => {
+    const b = cv.getBoundingClientRect(); if (!b.width || !grid) return;
+    const esc = Math.min(b.width / grid.cols, b.height / grid.rows), w = grid.cols * esc, h = grid.rows * esc;
+    ox = (b.width - w) / 2; oy = (b.height - h) / 2; escala = esc;
+    const s2 = root.querySelector('.px-stage').getBoundingClientRect();
+    if (capa) { capa.style.left = (b.left - s2.left + ox) + 'px'; capa.style.top = (b.top - s2.top + oy) + 'px'; capa.style.width = w + 'px'; capa.style.height = h + 'px'; capa.style.right = 'auto'; capa.style.bottom = 'auto'; }
+  };
+  const celdaDe = e => { const b = cv.getBoundingClientRect(); return [Math.floor((e.clientX - b.left - ox) / escala), Math.floor((e.clientY - b.top - oy) / escala)]; };
   const tt = document.getElementById('tt');
   cv.addEventListener('pointermove', e => {
-    const b = cv.getBoundingClientRect(), x = Math.floor((e.clientX - b.left) / b.width * grid.cols), y = Math.floor((e.clientY - b.top) / b.height * grid.rows);
+    const [x, y] = celdaDe(e);
     const cam = camaras.find(q => x >= q.x - 1 && x <= q.x + 5 && y >= q.y - 1 && y <= q.y + 4);
     if (Math.abs(x - hub.x - 3) <= 5 && Math.abs(y - hub.y - 3) <= 5) {
       tt.innerHTML = `<div class="tt-sub">Centro SITIA (ilustrativo)</div><div class="body-s">Carabineros opera; la SPD administra. Sin registro público de errores.</div><div class="body-s" style="margin-top:4px;color:var(--md-primary)">Clic: ver SITIA en el grafo</div>`;
@@ -201,7 +212,7 @@
   cv.addEventListener('pointerleave', () => tt.classList.remove('on'));
   cv.style.cursor = 'pointer';
   cv.addEventListener('click', e => {
-    const b = cv.getBoundingClientRect(), x = Math.floor((e.clientX - b.left) / b.width * grid.cols), y = Math.floor((e.clientY - b.top) / b.height * grid.rows);
+    const [x, y] = celdaDe(e);
     const enHub = Math.abs(x - hub.x - 3) <= 5 && Math.abs(y - hub.y - 3) <= 5, cam = camaras.find(q => x >= q.x - 1 && x <= q.x + 5 && y >= q.y - 1 && y <= q.y + 4);
     tt.classList.remove('on');
     if (enHub || cam) window.beholder?.ver('PRG-SITIA');
@@ -214,8 +225,8 @@
     camaras.forEach((q, i) => { if (i % 5 === 0) { q.flash = 0; pulsos.push({ ruta: linea(q.x + 2, q.y + 1, hub.x + 3, hub.y + 3), t0: -(10 + i * 3) / 45 }); } });
     dibujar(.1);
   }
-  preparar(); syncBtn();
+  preparar(); encuadrar(); syncBtn();
   if (!jugando) estatico();
   requestAnimationFrame(bucle);
-  let rt; new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(() => { const prev = modo; preparar(); if (prev !== modo && !jugando) estatico(); }, 120); }).observe(root);
+  let rt; new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(() => { const prev = modo; preparar(); encuadrar(); if (prev !== modo && !jugando) estatico(); }, 120); }).observe(root);
 })();

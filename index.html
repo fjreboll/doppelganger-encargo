@@ -62,9 +62,10 @@
 .px-wrap .px-banner{border-radius:0;box-shadow:none;border-bottom:1px solid #1f1f22}
 @media (min-width:1241px){.px-wrap .px-copy{padding-left:calc((100vw - 1208px)/2)}.px-wrap .px-src{left:calc((100vw - 1208px)/2)}}
 .px-banner{--px:"Pixelify Sans",var(--mono);--vt:"VT323",var(--mono);position:relative;border-radius:var(--shape-l);overflow:hidden;background:#000;color:#e2e2e9;box-shadow:var(--md-elev-1);font-family:var(--vt);font-size:18px;line-height:20px;letter-spacing:.2px}
-.px-stage{position:relative;aspect-ratio:var(--aspect,300/106)}
-.px-stage canvas{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges;display:block;cursor:crosshair}
-.px-labels{position:absolute;inset:0;pointer-events:none}
+.px-stage{position:relative;width:100%;aspect-ratio:var(--aspect,300/106);max-height:min(74vh,720px)}
+.px-stage canvas{position:absolute;top:0;bottom:0;right:0;left:auto;height:100%;width:auto;max-width:100%;object-fit:contain;image-rendering:pixelated;image-rendering:crisp-edges;display:block;cursor:crosshair}
+@media (max-width:639px){.px-stage{max-height:62vh}.px-stage canvas{right:50%;transform:translateX(50%)}}
+.px-labels{position:absolute;inset:0;pointer-events:none}  /* el JS la ajusta al rectángulo dibujado */
 .px-label{position:absolute;display:flex;flex-direction:column;gap:0;padding:2px 8px 3px;background:rgba(0,0,0,.88);font-size:20px;line-height:19px;white-space:nowrap;letter-spacing:.3px;box-shadow:0 0 0 2px #000}
 .px-label .n{color:#fff}.px-label .v{color:#c4c6d0;font-size:17px;line-height:16px}
 .px-label.end{transform:translate(calc(-100% - 22px),-50%);border-right:3px solid #e2e2e9;text-align:right}
@@ -104,6 +105,11 @@
 .px-aus li::before{content:"? ";color:#ff8a80}
 @media (min-width:640px) and (max-width:1100px){.px-aus{display:none}}
 
+.ver{display:inline-block;font:500 11px/16px var(--mono);letter-spacing:.3px;padding:1px 7px;border-radius:9px;white-space:nowrap}
+.ver.verificada{background:color-mix(in srgb,var(--viz-3) 22%,transparent);color:#7fdcb5}
+.ver.parcial{background:color-mix(in srgb,var(--viz-2) 22%,transparent);color:#ffb59a}
+.ver.espejo{background:color-mix(in srgb,var(--viz-1) 22%,transparent);color:#aac7ff}
+.ver.interno{border:1px dashed var(--md-outline);color:var(--md-on-surface-variant)}
 .notice{display:flex;gap:12px;padding:12px 16px;border-radius:var(--shape-m);background:var(--md-tertiary-container);color:var(--md-on-tertiary-container);margin-top:16px}
 @media (max-width:600px){.hide-s{display:none}.stat .v{font-size:36px;line-height:44px}.legend-card{position:static;max-width:none;border-radius:0}}
 
@@ -239,7 +245,7 @@ section[id]:focus{outline:none}
     </div>
     <aside class="card elevated side" id="side" aria-live="polite"></aside>
   </div>
-  <div class="notice"><span class="material-symbols-outlined">info</span><p class="body-m">La evidencia es paráfrasis extraída de la fuente, no cita literal. Verificar antes de citar.</p></div>
+  <div class="notice"><span class="material-symbols-outlined">info</span><p class="body-m">Cada cita es un fragmento literal leído en la página el 19-09-2026, con enlace a la fuente. La adhesión de municipios y privados consta solo en los logotipos de la portada; el enlace «logotipo» abre la imagen.</p></div>
 </section>
 
 <div class="wrap hero">
