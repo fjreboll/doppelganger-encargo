@@ -13,7 +13,7 @@ Red de nodos de la prueba de concepto C del programa *Doppelganger*: la ontolog�
 - Revisión 2026-09-19: la página de gobernanza (antes 403) publica los 20 integrantes del Comité de Ética, así que la ausencia «nómina del Comité» se retiró del grafo; la ficha del Repositorio de Algoritmos Públicos responde 404 y se retiró de las fuentes.
 - Ninguna empresa se fusiona con registros externos sin RUT (ver sección *Resolución de entidades*).
 - Revisión 2026-09-19 (segunda vuelta): el portal de integración LPR (`integracion.sitia.gob.cl`) documenta el recorrido completo del dato y se incorporó como fuente. Dos hallazgos quedan en el autorregistro: el menú «Documentación Técnica» de sitia.gob.cl enlaza a la portada del propio sitio, y la portada del portal técnico ofrece «análisis predictivo» para «anticipar actividades delictivas», capacidad ausente de la FAQ pública y de la gobernanza.
-- Los errores que el programa tipifica (401, 400, 404, 409, 429, TLS) son todos de la integración: ninguno nombra una lectura equivocada sobre una persona.
+- Los errores que el programa tipifica (401, 400, 404, 409, 429, TLS) son todos de la integración: ninguno nombra una lectura equivocada sobre una persona. El alcance de esa evidencia queda declarado en el sitio: la documentación examinada regula la integración de terceros y no el procedimiento policial, de modo que lo que consta es la ausencia en el documento, no la ausencia de un procedimiento interno.
 
 ## Estructura
 

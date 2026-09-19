@@ -630,7 +630,8 @@
    "atributos": {
     "evidencia_de_ausencia": "La página de preguntas frecuentes no aborda precisión, falsos positivos ni validación humana",
     "contraste_tecnico": "El manual de integración tipifica seis fallas (401, 400, 404, 409, 429 y timeout): todas son de la integración, ninguna de la lectura sobre una persona",
-    "fuente_contraste": "sitia_docs_errores"
+    "fuente_contraste": "sitia_docs_errores",
+    "alcance": "Ausencia documental verificada en la FAQ pública y en el manual de integración; no acredita inexistencia de un procedimiento interno de validación humana"
    },
    "plano_evidencia": "documentado",
    "fuente_id": "sitia_faq",
@@ -2453,7 +2454,7 @@
   ],
   "errores_fuente_id": "sitia_docs_errores",
   "errores_url": "https://integracion.sitia.gob.cl/docs/problemas-comunes/",
-  "cierre": "El sistema sabe nombrar un identificador repetido, no una patente mal leída sobre una persona. Ese error no tiene código, ni protocolo público, ni registro.",
+  "cierre": "El sistema sabe nombrar un identificador repetido, no una patente mal leída sobre una persona. En la documentación pública del programa ese error no tiene código ni protocolo; la documentación examinada regula la integración de terceros y no el procedimiento policial, de modo que lo que aquí consta es la ausencia en el documento, no la ausencia en el ámbito interno. Resolverlo requiere una solicitud de acceso a la información.",
   "nota_acceso": "El menú «Documentación Técnica» de sitia.gob.cl enlaza a la portada del propio sitio; el manual citado aquí se alcanza por «Integración LPR» (verificado el 19-09-2026)."
  }
 }
