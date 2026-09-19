@@ -177,6 +177,51 @@ section[id]:focus{outline:none}
 .pulso{animation:nav-pulso 1.4s ease-out 1}
 @keyframes nav-pulso{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--md-primary) 55%,transparent)}100%{box-shadow:0 0 0 14px transparent}}
 @media (prefers-reduced-motion:reduce){.pulso{animation:none;outline:2px solid var(--md-primary)}}
+/* ── difuminado del mapa hacia la izquierda ── */
+.px-banner{--px-fade:linear-gradient(90deg,rgba(0,0,0,0) 0,rgba(0,0,0,.10) 6%,rgba(0,0,0,.45) 15%,rgba(0,0,0,.84) 27%,#000 38%)}
+.px-stage canvas,.px-labels{-webkit-mask-image:var(--px-fade);mask-image:var(--px-fade);-webkit-mask-size:100% 100%;mask-size:100% 100%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
+.px-velo{position:absolute;inset:0;pointer-events:none;backdrop-filter:blur(7px) saturate(.75);-webkit-backdrop-filter:blur(7px) saturate(.75);
+  -webkit-mask-image:linear-gradient(90deg,#000 0,rgba(0,0,0,.92) 12%,rgba(0,0,0,.52) 25%,rgba(0,0,0,.18) 37%,transparent 50%);
+  mask-image:linear-gradient(90deg,#000 0,rgba(0,0,0,.92) 12%,rgba(0,0,0,.52) 25%,rgba(0,0,0,.18) 37%,transparent 50%)}
+@media (max-width:639px){
+ .px-banner{--px-fade:linear-gradient(90deg,rgba(0,0,0,0) 0,rgba(0,0,0,.4) 8%,#000 24%)}
+ .px-velo{backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
+  -webkit-mask-image:linear-gradient(90deg,#000 0,rgba(0,0,0,.55) 14%,transparent 30%);
+  mask-image:linear-gradient(90deg,#000 0,rgba(0,0,0,.55) 14%,transparent 30%)}
+}
+
+/* ── bandas generativas por sección (secviz.js) ── */
+.viz-band{position:relative;height:90px;margin:40px 0 14px;overflow:hidden;border-radius:var(--shape-s);background:#05050a;border:1px solid #17171b}
+.viz-band canvas{width:100%;height:100%;display:block;image-rendering:pixelated;image-rendering:crisp-edges}
+.viz-band::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(0,0,0,.6),transparent 20%,transparent 80%,rgba(0,0,0,.6))}
+section:first-of-type .viz-band{margin-top:24px}
+@media (max-width:639px){.viz-band{height:62px;margin:26px 0 12px}}
+/* ── la vida del dato ── */
+.vida{padding:0;overflow:hidden}
+#vida-pista{display:block;width:100%;height:124px;background:#05050a;image-rendering:pixelated;image-rendering:crisp-edges;border-bottom:1px solid #17171b}
+.vida-linea{list-style:none;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:1px;margin:0;padding:0;background:#17171b;border-bottom:1px solid #17171b}
+.vida-linea li{background:var(--md-surface)}
+.vp{all:unset;box-sizing:border-box;display:flex;flex-direction:column;gap:1px;width:100%;padding:10px 12px;cursor:pointer;color:var(--md-on-surface-variant);border-top:3px solid transparent}
+.vp:hover{background:color-mix(in srgb,var(--md-on-surface) 6%,transparent)}
+.vp:focus-visible{outline:2px solid var(--md-primary);outline-offset:-2px}
+.vp.on{border-top-color:var(--md-primary);color:var(--md-on-surface);background:var(--md-surface-container-low)}
+.vp-n{font:500 11px/14px var(--mono);color:var(--md-outline)}
+.vp.on .vp-n{color:var(--md-primary)}
+.vp-t{font:500 15px/20px var(--font)}
+.vp-s{font-size:12px;line-height:16px;color:var(--md-on-surface-variant)}
+.vida-detalle{padding:18px 20px 20px}
+.vida-detalle .quote{font-size:15px;line-height:21px;margin-top:0}
+.vida-falta{display:flex;gap:8px;align-items:flex-start;margin:0;padding:10px 12px;border-radius:var(--shape-s);border:1px dashed var(--net-aus);color:var(--md-on-surface);font-size:14px;line-height:20px}
+.vida-falta .material-symbols-outlined{font-size:18px;color:var(--net-aus);flex:none}
+.ev-grupos{display:grid;gap:10px;margin-top:10px}
+.ev-g{padding-top:10px;border-top:1px solid var(--md-outline-variant)}
+.ev-campos{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 4px}
+.ev-campos code{font:400 12px/18px var(--mono);padding:1px 6px;border-radius:6px;background:var(--md-surface-container-high);color:var(--md-on-surface)}
+.err-lista{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px}
+.err-lista li{display:flex;gap:10px;align-items:baseline;font-size:14px;line-height:20px}
+.err-lista code{font:500 12px/18px var(--mono);min-width:46px;text-align:center;padding:1px 6px;border-radius:6px;background:var(--md-surface-container-high);color:var(--md-on-surface-variant)}
+@media (max-width:860px){.vida-linea{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (max-width:560px){.vida-linea{grid-template-columns:repeat(2,minmax(0,1fr))}#vida-pista{height:92px}.vp-s{display:none}}
 </style>
 </head>
 <body>
@@ -207,10 +252,10 @@ section[id]:focus{outline:none}
     <div class="px-stage">
       <canvas role="img" aria-label="Mapa pixelado de la Región Metropolitana con las 12 municipalidades nombradas por SITIA, cámaras y flujos hacia un centro"></canvas>
       <div class="px-labels" aria-hidden="true"><span class="px-hub">CENTRO SITIA</span></div>
+      <div class="px-velo" aria-hidden="true"></div>
       <div class="px-ctrl"><button class="icon-btn px-play" aria-label="Pausar animación"><span class="material-symbols-outlined">pause</span></button></div>
     </div>
     <div class="px-copy">
-      <p class="px-kicker">Prueba C · grafo del encargo SITIA</p>
       <h2 class="px-title" id="px-title">Beholder</h2>
       <p class="px-sub">Quién mira, con qué y qué no se documenta.</p>
       <div class="px-stats"><div><b class="px-camaras">—</b><span>cámaras</span></div><div><b class="px-lectores">—</b><span>lectores de patentes</span></div><div><b class="px-comunas">—</b><span>comunas RM</span></div></div>
@@ -226,8 +271,9 @@ section[id]:focus{outline:none}
   </div>
 </div>
 
-<section class="wrap" id="grafo">
-  <div class="sec-head"><div><span class="overline">01 · Red</span><h2 class="headline-s">Actores y ausencias</h2><p class="body-m muted" style="margin-top:4px">Pase el cursor para ver la evidencia. Clic para fijar.</p></div></div>
+<section class="wrap" id="grafo" data-n="01" data-corto="Red">
+  <div class="viz-band" data-viz="red" data-n="01"></div>
+  <div class="sec-head"><div><h2 class="headline-s">Actores y ausencias</h2><p class="body-m muted" style="margin-top:4px">Cursor para ver la evidencia; clic para fijar.</p></div></div>
   <div class="toolbar">
     <label class="textfield"><span class="material-symbols-outlined">search</span><input id="q" type="search" placeholder="Buscar" aria-label="Buscar en el grafo"></label>
     <div class="chip-set scroll-s" id="chips" role="group" aria-label="Familias visibles"></div>
@@ -245,44 +291,66 @@ section[id]:focus{outline:none}
     </div>
     <aside class="card elevated side" id="side" aria-live="polite"></aside>
   </div>
-  <div class="notice"><span class="material-symbols-outlined">info</span><p class="body-m">Cada cita es un fragmento literal leído en la página el 19-09-2026, con enlace a la fuente. La adhesión de municipios y privados consta solo en los logotipos de la portada; el enlace «logotipo» abre la imagen.</p></div>
+  <div class="notice"><span class="material-symbols-outlined">info</span><p class="body-m">Cada cita es un fragmento literal leído el 19-09-2026, con enlace. La adhesión municipal y privada consta solo en los logotipos de la portada: el enlace «logotipo» abre la imagen.</p></div>
 </section>
 
 <div class="wrap hero">
-  <span class="overline">Doppelganger · prueba C</span>
   <h1 class="display-m">La fusión de datos, apuntada al Estado.</h1>
-  <p class="body-l muted">Organismos, empresas, normas y cargos detrás de SITIA. Cada vínculo tiene fuente; lo que falta también es un dato.</p>
+  <p class="body-l muted">Quién encarga, provee y opera SITIA. Cada vínculo tiene fuente; lo que falta también es un dato.</p>
 </div>
 <div class="wrap"><div class="grid g-4" id="stats" style="margin:24px 0 8px"></div></div>
 
 
-<section class="wrap" id="ausencias">
-  <div class="sec-head"><div><span class="overline">02 · Antirregistro</span><h2 class="headline-s">Lo que no se documenta</h2></div></div>
+<section class="wrap" id="vida" data-n="02" data-corto="La vida del dato">
+  <div class="viz-band" data-viz="dato" data-n="02"></div>
+  <div class="sec-head"><div><h2 class="headline-s">La vida del dato: de la imagen a la orden de salida</h2>
+    <p class="body-m muted" style="margin-top:4px">Siete estaciones, según la documentación del propio programa. En cada una, lo que consta y lo que no.</p></div></div>
+  <div class="card vida">
+    <canvas id="vida-pista" role="img" aria-label="Recorrido del dato desde la cámara hasta la unidad policial"></canvas>
+    <ol class="vida-linea" id="vida-linea" role="tablist" aria-label="Estaciones del recorrido"></ol>
+    <div class="vida-detalle" id="vida-detalle" aria-live="polite"></div>
+  </div>
+  <div class="grid g-2" style="margin-top:16px">
+    <div class="card"><h3 class="title-m" style="margin-bottom:4px">El evento</h3>
+      <p class="body-s muted">Una lectura convertida en registro: <code>sitia.ingestion.vehicle-detected.v1</code>.</p>
+      <div id="vida-evento"></div></div>
+    <div class="card"><h3 class="title-m" style="margin-bottom:4px">Los errores que el sistema nombra</h3>
+      <p class="body-s muted">La documentación técnica tipifica seis fallas. Todas son de la integración.</p>
+      <div id="vida-errores"></div></div>
+  </div>
+</section>
+
+<section class="wrap" id="ausencias" data-n="03" data-corto="Antirregistro">
+  <div class="viz-band" data-viz="vacios" data-n="03"></div>
+  <div class="sec-head"><div><h2 class="headline-s">Lo que no se documenta</h2></div></div>
   <div class="grid g-3" id="aus"></div>
 </section>
 
-<section class="wrap" id="material">
+<section class="wrap" id="material" data-n="04" data-corto="Mercado e identidad">
+  <div class="viz-band" data-viz="mercado" data-n="04"></div>
   <div class="grid g-2">
     <div class="card chart-card">
-      <span class="overline">03 · Mercado</span><h3 class="title-m" style="margin:4px 0 2px">Empresas nuevas con «inteligencia artificial» en el nombre</h3>
+      <h3 class="title-m" style="margin:0 0 2px">Empresas nuevas con «inteligencia artificial» en el nombre</h3>
       <p class="body-m muted">Registro de Empresas y Sociedades. 2026 hasta junio.</p>
       <svg id="c-ia" style="width:100%;display:block;margin-top:12px" role="img" aria-label="Constituciones por año"></svg>
     </div>
     <div class="card">
-      <span class="overline">04 · Identidad</span><h3 class="title-m" style="margin:4px 0 12px">Un nombre no es una empresa</h3>
+      <h3 class="title-m" style="margin:0 0 12px">Un nombre no es una empresa</h3>
       <div class="scroll-x" id="res"></div>
-      <p class="body-m muted" style="margin-top:12px">«SONDA» aparece en 78 razones sociales. Sin RUT, fusionar sería inventar vínculos.</p>
+      <p class="body-m muted" style="margin-top:12px">«SONDA» aparece en 78 razones sociales: sin RUT, fusionar sería inventar vínculos.</p>
     </div>
   </div>
 </section>
 
-<section class="wrap" id="tabla">
-  <div class="sec-head"><div><span class="overline">05 · Tabla</span><h2 class="headline-s">Todos los vínculos</h2></div></div>
+<section class="wrap" id="tabla" data-n="05" data-corto="Tabla">
+  <div class="viz-band" data-viz="tabla" data-n="05"></div>
+  <div class="sec-head"><div><h2 class="headline-s">Todos los vínculos</h2></div></div>
   <div class="card scroll-x" id="tabla-v"></div>
 </section>
 
-<section class="wrap" id="metodo">
-  <div class="sec-head"><div><span class="overline">06 · Método</span><h2 class="headline-s">Autorregistro y fuentes</h2></div></div>
+<section class="wrap" id="metodo" data-n="06" data-corto="Método">
+  <div class="viz-band" data-viz="metodo" data-n="06"></div>
+  <div class="sec-head"><div><h2 class="headline-s">Autorregistro y fuentes</h2></div></div>
   <h3 class="title-l" style="margin:8px 0 12px">Autorregistro</h3>
   <div id="auto"></div>
   <h3 class="title-l" style="margin:32px 0 12px">Fuentes</h3>
@@ -299,6 +367,8 @@ section[id]:focus{outline:none}
 <script src="assets/d3.v7.min.js"></script>
 <script src="app.js"></script>
 <script src="banner.js"></script>
+<script src="vida.js"></script>
+<script src="secviz.js"></script>
 <script src="nav.js"></script>
 </body>
 </html>
