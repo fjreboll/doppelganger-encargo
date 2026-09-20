@@ -631,7 +631,8 @@
     "evidencia_de_ausencia": "La página de preguntas frecuentes no aborda precisión, falsos positivos ni validación humana",
     "contraste_tecnico": "El manual de integración tipifica seis fallas (401, 400, 404, 409, 429 y timeout): todas son de la integración, ninguna de la lectura sobre una persona",
     "fuente_contraste": "sitia_docs_errores",
-    "alcance": "Ausencia documental verificada en la FAQ pública y en el manual de integración; no acredita inexistencia de un procedimiento interno de validación humana"
+    "alcance": "Ausencia documental verificada en la FAQ pública y en el manual de integración; no acredita inexistencia de un procedimiento interno de validación humana",
+    "solicitud_transparencia": "Ley 20.285, ingresada el 2026-09-20 · AB091T0004004 (petición 1) · BE001T0000718 (peticiones 1 y 2) · pide protocolo de falsos positivos y validación humana · estado: en plazo"
    },
    "plano_evidencia": "documentado",
    "fuente_id": "sitia_faq",
@@ -650,7 +651,8 @@
    "tipo": "Ausencia",
    "nombre": "Identificación del proveedor tecnológico en la información institucional",
    "atributos": {
-    "contraste": "La nota corporativa de SONDA (2024-12-13) declara la adjudicación"
+    "contraste": "La nota corporativa de SONDA (2024-12-13) declara la adjudicación",
+    "solicitud_transparencia": "Ley 20.285, ingresada el 2026-09-20 · AB091T0004004 (petición 9) · pide identificación del proveedor en la información institucional · estado: en plazo"
    },
    "plano_evidencia": "documentado",
    "fuente_id": "sitia_faq",
@@ -671,7 +673,8 @@
    "atributos": {
     "cita": "SITIA no conserva grabaciones de video, sino que se ocupa de la interoperabilidad de datos entre organismos",
     "contraste_tecnico": "El diagrama de ingesta declara «Datos anonimizados para análisis futuro» sin plazo, mientras la FAQ pública afirma que SITIA no es un repositorio de videos",
-    "fuente_contraste": "sitia_docs_inicio"
+    "fuente_contraste": "sitia_docs_inicio",
+    "solicitud_transparencia": "Ley 20.285, ingresada el 2026-09-20 · AB091T0004004 (petición 4) · pide plazos de retención de lecturas, imágenes y alertas · estado: en plazo"
    },
    "plano_evidencia": "documentado",
    "fuente_id": "sitia_faq",
@@ -689,7 +692,9 @@
    "id": "AUS-CODIGO-LICIT",
    "tipo": "Ausencia",
    "nombre": "Código de licitación en Mercado Público (no verificado: portal inaccesible desde la POC)",
-   "atributos": {},
+   "atributos": {
+    "solicitud_transparencia": "Ley 20.285, ingresada el 2026-09-20 · AB091T0004004 (petición 9) · pide identificador del proceso de contratación y contrato vigente · estado: en plazo"
+   },
    "plano_evidencia": "reconstruccion",
    "fuente_id": "sonda_summit",
    "fuente": "SITIA Summit: Gobierno expone avances… (nota corporativa)",
@@ -706,7 +711,9 @@
    "id": "AUS-REGISTRO-DIV",
    "tipo": "Ausencia",
    "nombre": "Registro público de divergencias del sistema",
-   "atributos": {},
+   "atributos": {
+    "solicitud_transparencia": "Ley 20.285, ingresada el 2026-09-20 · AB091T0004004 (petición 5) · BE001T0000718 (petición 3) · pide registro o estadística de coincidencias incorrectas · estado: en plazo"
+   },
    "plano_evidencia": "documentado",
    "fuente_id": "sitia_faq",
    "fuente": "SITIA · preguntas frecuentes (modificada 2026-05-28)",
@@ -2238,11 +2245,11 @@
   {
    "componente": "C·transparencia",
    "que_registro": "Solicitud de acceso a la información pública (Ley 20.285) sobre lo que el grafo registra como ausente: protocolo de falsos positivos y validación humana, umbral de decisión, bases cotejadas y su actualización, plazos de retención, registro interno de divergencias, evaluación de impacto algorítmico, análisis predictivo, instrumentos de adhesión, proceso de contratación y actas del Comité de Ética",
-   "efecto": "Dos escritos redactados el 2026-09-19: el principal a la Subsecretaría de Prevención del Delito y uno derivado a Carabineros de Chile por la parte operativa de las alertas",
-   "inexactitud": "Estado del trámite: redactado, pendiente de ingreso. Mientras no haya folio, las cinco ausencias siguen siendo ausencias documentales y no acreditan inexistencia de los procedimientos en el ámbito interno",
-   "correccion": "Ingresar ambos escritos el mismo día y anotar aquí folio, fecha y respuesta; si hay silencio o denegación, amparo ante el Consejo para la Transparencia dentro de 15 días hábiles",
+   "efecto": "Dos escritos ingresados el 2026-09-20: folio AB091T0004004 (escrito principal, diez peticiones) y folio BE001T0000718 (escrito derivado por la parte operativa de las alertas, cuatro peticiones)",
+   "inexactitud": "Trámite en curso: mientras no haya respuesta, las cinco ausencias siguen siendo documentales y no acreditan inexistencia de los procedimientos en el ámbito interno. El plazo legal de respuesta vence el 2026-10-20 (20 días hábiles), prorrogable por diez días hábiles mediante resolución fundada",
+   "correccion": "Registrar aquí la respuesta de cada organismo; ante silencio o denegación, amparo ante el Consejo para la Transparencia dentro de los 15 días hábiles siguientes",
    "deteccion": "Revisión de la documentación pública y técnica del programa el 2026-09-19",
-   "metrica": "10 peticiones en el escrito principal · 4 en el derivado · 8 ausencias o contrastes cubiertos · folio: pendiente"
+   "metrica": "10 peticiones + 4 · folios AB091T0004004 y BE001T0000718 · ingreso 2026-09-20 · vencimiento 2026-10-20 · respuestas: 0"
   }
  ],
  "ia_res": [
