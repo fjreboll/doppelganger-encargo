@@ -172,7 +172,7 @@
   /* texto dinámico */
   const prog = D.nodos.find(n => n.id === 'PRG-SITIA').atributos;
   $('.px-camaras').textContent = prog.camaras; $('.px-lectores').textContent = prog.lectores_patentes; $('.px-comunas').textContent = prog.comunas_RM;
-  const CORTO = { 'AUS-PROTOCOLO-ERROR': 'falsos positivos', 'AUS-PROVEEDOR-FAQ': 'proveedor', 'AUS-RETENCION': 'retención', 'AUS-CODIGO-LICIT': 'licitación', 'AUS-REGISTRO-DIV': 'registro de errores', 'AUS-NOMINA-ETICA': 'comité de ética' };
+  const CORTO = { 'AUS-PROTOCOLO-ERROR': 'falsos positivos', 'AUS-PROVEEDOR-FAQ': 'proveedor', 'AUS-RETENCION': 'retención', 'AUS-CODIGO-LICIT': 'licitación', 'AUS-REGISTRO-DIV': 'registro de errores', 'AUS-NOMINA-ETICA': 'comité de ética', 'AUS-COMITE-ACTO': 'acto del comité de ética', 'AUS-CONSERV-AGREGADOS': 'conservación de agregados', 'AUS-PREDICTIVO-DOC': 'análisis predictivo', 'AUS-APROBACION-ERA': 'aprobación de la evaluación', 'AUS-RECLAMO': 'vía de reclamo' };
   const lista = $('.px-aus');
   aus.forEach(n => { const li = document.createElement('li'); const b = document.createElement('button'); b.type = 'button'; b.textContent = CORTO[n.id] || n.nombre.split(' (')[0]; b.title = n.nombre + ' · ver en el grafo'; b.onclick = () => window.beholder?.ver(n.id); li.append(b); lista.append(li); });
   $('.px-aus-n').textContent = aus.length;

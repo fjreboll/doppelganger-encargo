@@ -37,7 +37,7 @@
   nodes.forEach(n => { n.deg = 0; n.out = []; n.in = []; });
   links.forEach(l => { byId.get(l.source).deg++; byId.get(l.target).deg++; byId.get(l.source).out.push(l); byId.get(l.target).in.push(l); });
   const nombre = n => n.nombre.split(' · ')[0];
-  const sello = v => !v ? '' : `<span class="ver ${v.estado}">${v.estado === 'verificada' ? 'verificada ' + v.fecha : v.estado === 'parcial' ? 'verificación parcial' : v.estado === 'espejo' ? 'vía espejo' : 'simulación propia'}</span>`;
+  const sello = v => !v ? '' : `<span class="ver ${v.estado}">${v.estado === 'verificada' ? 'verificada ' + v.fecha : v.estado === 'parcial' ? 'verificación parcial' : v.estado === 'espejo' ? 'vía espejo' : v.estado === 'oficio' ? 'oficio ' + v.fecha : 'simulación propia'}</span>`;
   const verTitulo = v => !v ? '' : esc([v.metodo, v.nota].filter(Boolean).join(' · '));
   const aus = nodes.filter(n => n.familia === 'ausencia');
 
